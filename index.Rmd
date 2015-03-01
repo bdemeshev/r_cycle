@@ -1,0 +1,28 @@
+---
+title: "index"
+author: "Boris Demeshev"
+date: "2 March 2015"
+output: html_document
+---
+* [01. Работа с качественными переменными](cycle_files/01_qualitative_variable.html)
+* [02. Апельсины и простая регрессия](http://rpubs.com/boris_demeshev/r_cycle_02)
+* [03. Логит и пробит модели](http://rpubs.com/boris_demeshev/r_cycle_03)
+* [04. Визуализация результатов logit регрессии](http://rpubs.com/boris_demeshev/r_cycle_04)
+* [05. Мультиколлинеарность](http://rpubs.com/boris_demeshev/r_cycle_05)
+* [06. Метод главных компонент](http://rpubs.com/boris_demeshev/r_cycle_06)
+* [07. Квантильная регрессия](http://rpubs.com/boris_demeshev/r_cycle_07)
+* [08. R --- веселый калькулятор](http://rpubs.com/boris_demeshev/r_cycle_08) 
+* [09. Панельные данные](http://rpubs.com/boris_demeshev/r_cycle_09)
+* [10. Дифференциальные уравнения](http://rpubs.com/boris_demeshev/r_cycle_10)
+* [11. Метод опорных векторов](http://rpubs.com/boris_demeshev/r_cycle_11)
+* [12. Гетероскедастичность](http://rpubs.com/boris_demeshev/r_cycle_12)
+* [13. Парсинг](http://rpubs.com/boris_demeshev/r_cycle_13)
+* [14. Карты](http://rpubs.com/boris_demeshev/r_cycle_14)
+* [15. MCMC для простых моделей](http://rpubs.com/boris_demeshev/r_cycle_15)
+* [16. Смешные xkcd-графики](http://rpubs.com/boris_demeshev/r_cycle_16) Хм! Тут в самую тему непараметрическая регрессия!
+* [17. Метод максимального правдоподобия](http://rpubs.com/boris_demeshev/r_cycle_17)
+* [18. Преобразования данных](http://rpubs.com/boris_demeshev/r_cycle_18)
+* [19. Облачные вычисления с R](http://rpubs.com/boris_demeshev/r_cycle_19)
+* [20. Создание своего пакета R](http://rpubs.com/boris_demeshev/r_cycle_20)
+* [21. Байесовские VAR модели](http://rpubs.com/boris_demeshev/r_cycle_21)
+* [22. Случайный лес](http://rpubs.com/boris_demeshev/r_cycle_22)
