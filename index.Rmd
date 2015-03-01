@@ -1,28 +1,37 @@
 ---
-title: "index"
-author: "Boris Demeshev"
+title: "Заметки по R"
+author: "Борис Демешев"
 date: "2 March 2015"
 output: html_document
 ---
 * [01. Работа с качественными переменными](cycle_files/01_qualitative_variable.html)
-* [02. Апельсины и простая регрессия](http://rpubs.com/boris_demeshev/r_cycle_02)
-* [03. Логит и пробит модели](http://rpubs.com/boris_demeshev/r_cycle_03)
-* [04. Визуализация результатов logit регрессии](http://rpubs.com/boris_demeshev/r_cycle_04)
-* [05. Мультиколлинеарность](http://rpubs.com/boris_demeshev/r_cycle_05)
-* [06. Метод главных компонент](http://rpubs.com/boris_demeshev/r_cycle_06)
-* [07. Квантильная регрессия](http://rpubs.com/boris_demeshev/r_cycle_07)
-* [08. R --- веселый калькулятор](http://rpubs.com/boris_demeshev/r_cycle_08) 
-* [09. Панельные данные](http://rpubs.com/boris_demeshev/r_cycle_09)
-* [10. Дифференциальные уравнения](http://rpubs.com/boris_demeshev/r_cycle_10)
-* [11. Метод опорных векторов](http://rpubs.com/boris_demeshev/r_cycle_11)
-* [12. Гетероскедастичность](http://rpubs.com/boris_demeshev/r_cycle_12)
-* [13. Парсинг](http://rpubs.com/boris_demeshev/r_cycle_13)
-* [14. Карты](http://rpubs.com/boris_demeshev/r_cycle_14)
-* [15. MCMC для простых моделей](http://rpubs.com/boris_demeshev/r_cycle_15)
-* [16. Смешные xkcd-графики](http://rpubs.com/boris_demeshev/r_cycle_16) Хм! Тут в самую тему непараметрическая регрессия!
-* [17. Метод максимального правдоподобия](http://rpubs.com/boris_demeshev/r_cycle_17)
-* [18. Преобразования данных](http://rpubs.com/boris_demeshev/r_cycle_18)
-* [19. Облачные вычисления с R](http://rpubs.com/boris_demeshev/r_cycle_19)
-* [20. Создание своего пакета R](http://rpubs.com/boris_demeshev/r_cycle_20)
-* [21. Байесовские VAR модели](http://rpubs.com/boris_demeshev/r_cycle_21)
-* [22. Случайный лес](http://rpubs.com/boris_demeshev/r_cycle_22)
+* [02. Апельсины и простая регрессия](cycle_files/02_ols_oranges.html)
+* [03. Логит и пробит модели](cycle_files/03_logit_regression.html)
+* [04. Визуализация результатов logit регрессии](cycle_files/04_qualit_graphs.html)
+* [05. Мультиколлинеарность](cycle_files/05_multicollinearity.html)
+* [06. Метод главных компонент](cycle_files/06_pca.html)
+* [07. Квантильная регрессия](cycle_files/07_quant_reg.html)
+* [08. R --- веселый калькулятор](cycle_files/08_fancy_calc.html) 
+* [09. Панельные данные](cycle_files/09_panel_regression.html)
+* [10. Дифференциальные уравнения](cycle_files/10_diff_eq.html)
+* [11. Метод опорных векторов](cycle_files/11_svm.html)
+* [12. Гетероскедастичность](cycle_files/12_hetero.html)
+* 13. Парсинг 
+* 14. Карты
+* [15. MCMC для простых моделей](cycle_files/15_mcmc_pack.html)
+* 16. Смешные xkcd-графики Хм! Тут в самую тему непараметрическая регрессия!
+* [17. Метод максимального правдоподобия](cycle_files/17_ml.html)
+* [18. Преобразования данных](cycle_files/18_data_transform.html)
+* [19. Облачные вычисления с R](cycle_files/19_cloud.html)
+* [20. Создание своего пакета R](cycle_files/20_package.html)
+* [21. Байесовские VAR модели](cycle_files/21_bayesian_var.html)
+* [22. Случайный лес](cycle_files/22_forest.html)
+* [23. Загрузка данных по России](cycle_files/23_load_rus_data.html)
+* 24. Работа с данными rlms (план)
+
+
+
+Открыв любую заметку и заменив в адресной строке браузера разрешение `html` на `Rmd` можно увидеть исходный текст, по которому создавалась страничка.
+
+
+
