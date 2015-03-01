@@ -1,0 +1,98 @@
+---
+title: "Источники данных по России"
+author: "Boris Demeshev"
+output: html_document
+---
+
+От статистики не скроешься никуда. Она имеет точные сведения не только о количестве зубных врачей, колбасных шприцев, дворников, кинорежиссеров, проституток, соломенных крыш, вдов, извозчиков и колоколов, --- но знает даже, сколько в стране статистиков.
+
+И одного она не знает. Не знает и не может узнать. Она не знает, сколько в СССР стульев.
+
+
+Илья Ильф, Евгений Петров, 12 стульев
+
+
+Есть несколько пакетов, облегчающих скачиваний российских статистических данных. На официальный репозиторий пакетов CRAN они пока еще не выложены, поэтому займёмся сначала их установкой.
+
+```{r, eval=FALSE}
+library("devtools")
+devtools::install_github("bdemeshev/rlms")
+devtools::install_github("bdemeshev/sophisthse")
+devtools::install_github("bdemeshev/datamos")
+devtools::install_github("rOpenGov/rustfare")
+install.packages("rusquant", repos="http://R-Forge.R-project.org", type="source")
+```
+
+Остальные пакеты устанавливаются стандартным способом
+```{r, message=FALSE}
+library("ggplot2")
+library("Quandl")
+library("quantmod")
+library("sophisthse")
+library("datamos")
+library("rlms")
+library("rustfare")
+library("WDI")
+library("dplyr")
+```
+
+Загрузим временные ряды с [sophist.hse.ru](http://sophist.hse.ru)
+
+
+Список рядов
+
+
+Загрузим данные по цене акций с [finam.ru](http://www.finam.ru)
+
+
+Прочитаем данные rlms
+
+
+Простенький график
+
+
+Загрузим данные госкомстата
+
+```{r, eval=FALSE}
+ind <- IndicatorRosstat() # функция качает список рядов
+# http://research.muuankarski.org/rustfare/data/RosstatIndicatorData.RData
+
+
+IndicatorRosstat
+glimpse(ind)
+# http://research.muuankarski.org/rustfare/data/RosstatRegionKey.RData
+dat <- GetRosstat("infant_mortality_rate",
+                   "federal_district")
+ScrapeData_skip1
+GetRosstat
+
+shapefile <- GetRusGADM("region")
+# http://research.muuankarski.org/rustfare/data/shape/ShapeRegion.RData
+# http://gadm.org/data/rda/RUS_adm2.RData
+# http://research.muuankarski.org/rustfare/data/shape/ShapeFederalDistrict.RData
+
+GetRusGADM
+str(shapefile)
+plot(shapefile)
+```
+
+
+Список рядов
+
+
+Загрузим данные [datamos.ru](datamos.ru)
+
+
+Некоторые данные по России на Quandl
+
+WDI
+
+OECD
+
+
+
+По материалам
+
+[https://github.com/vincentarelbundock/WDI](https://github.com/vincentarelbundock/WDI)
+
+
