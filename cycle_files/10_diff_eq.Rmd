@@ -2,16 +2,16 @@
 
 
 ```{r, message=FALSE}
-require("knitr")
+library("knitr")
 opts_chunk$set(
   # cache=FALSE,
                message=FALSE,warning=FALSE) 
 
-require("ggplot2") # для построения графиков
-require("rasterVis")
-require("fields")
-require("deSolve")
-require("bvpSolve")
+library("ggplot2") # для построения графиков
+library("rasterVis")
+library("fields")
+library("deSolve")
+library("bvpSolve")
 
 ```
 

@@ -8,8 +8,8 @@ library("knitr")
 library("ggplot2") # графики
 library("kernlab") # Support Vector Machines
 # install.packages("kernlab") # может быть нужно установить пакеты...
-require("plyr")
-require("caret")
+library("plyr")
+library("caret")
 ```
 
 Другой популярный пакет для SVM в R --- это `e1071`.
@@ -231,7 +231,7 @@ head(d)
 Есть замечательный пакет `caret` созвучный с carrot :) В нем реализовано и деление выборки на тестовую и обучающую части и подбор параметров  с помощью кросс-валидации для кучи методов, в том числе для SVM. Морковка очень вкусная :)
 
 ```{r}
-require(caret)
+library(caret)
 ctrl <- trainControl(classProbs=TRUE)
 fit <- train(brick~price+totsp+livesp+kitsp+dist+metrdist+walk+floor+code,
              data=train.h,method="svmRadial",trControl = ctrl)
