@@ -1,4 +1,9 @@
-# Гетероскедастичность в R
+---
+title: "Гетероскедастичность в R"
+date: "`r format(Sys.time(), '%d.%m.%Y')`"
+output: html_document
+lang: russian
+---
 
 Загружаем нужные пакеты:
 ```{r, message=FALSE, warning=FALSE}
@@ -10,6 +15,7 @@ library("sandwich") # оценка Var для гетероскедастично
 # library(bstats) # тест Уайта, тест Бройша-Пагана
 # bpstats забанен
 library("lmtest") # тест Бройша-Пагана
+library("dplyr") # манипуляции с данными
 
 
 theme_set(theme_bw())
@@ -41,16 +47,16 @@ theme_set(theme_bw())
 Файл с данными по стоимости квартир в Москве доступен по ссылке [goo.gl/zL5JQ](http://goo.gl/zL5JQ)
 
 ```{r, "read table"}
-filename <- "~/em301/datasets/flats_moscow.txt"
-h <- read.table(filename,header=TRUE)
+filename <- "~/Documents/em301/datasets/flats_moscow.txt"
+h <- read.table(filename, header=TRUE)
 
-qplot(totsp,price,data=h)
+qplot(totsp, price, data=h)
 ```
 
 
 Строим регрессию стоимости на общую площадь.
 ```{r}
-m1 <- lm(price~totsp,data=h)
+m1 <- lm(price~totsp, data = h)
 summary(m1)
 ```
 
@@ -92,21 +98,30 @@ vcovHC(m1)
 
 Применяя правильную $\widehat{Var}_{HC}(\hat{\beta})$, проверим гипотезы.
 ```{r}
-coeftest(m1,vcov=vcovHC(m1))
+coeftest(m1, vcov = vcovHC(m1))
 ```
 
 Доверительный интервал надо строить руками. За основу мы возьмем табличку с правильными стандартными ошибками и прибавим и вычтем их от оценок коэффициентов.
 ```{r}
-conftable <- coeftest(m1,vcov=vcovHC(m1))
-ci <- data.frame(estimate=conftable[,1],sd_hc=conftable[,2])
-ci$left_95 <- ci$estimate-qnorm(0.975)*ci$sd_hc
-ci$right_95 <- ci$estimate+qnorm(0.975)*ci$sd_hc
+conftable <- coeftest(m1, vcov=vcovHC(m1))
+ci <- data_frame(estimate = conftable[, 1], 
+                 se_hc = conftable[, 2],
+                 left_95 = estimate - qnorm(0.975)*se_hc,
+                 right_95 = estimate + qnorm(0.975)*se_hc)
 ci
 ```
 
+Ещё есть малоизвестный пакет `Greg` Макса Гордона и в нём есть готовая функция:
+```{r}
+Greg::confint_robust(m1)
+```
+
+Пакет `Greg` не доступен на официальном репозитории CRAN, ставится с `github` командой `devtools::install_github("gforge/Greg")`.
+
+
 В R вектор весов `weights` должен быть обратно пропорционален дисперсиям, т.е. $w_i=1/\sigma^2_i$.
 ```{r}
-model<- lm(price~totsp, weights=I(1/totsp), data=h)
+model<- lm(price~totsp, weights=I(1 / totsp), data = h)
 summary(model)
 ```
 
@@ -130,7 +145,7 @@ s_i = \frac{\varepsilon_i}{\sqrt{\hat{\sigma}^2(1-h_{ii})}}
 В R:
 ```{r}
 m1.st.resid <- rstandard(m1) # получаем стандартизированные остатки
-qplot(totsp,abs(m1.st.resid),data=h,alpha=0.05)
+qplot(totsp,abs(m1.st.resid), data=h, alpha = 0.05)
 ```
 
 Иногда для простоты пропускают второй шаг со стандартизацией остатков и в результате могут ошибочно принять принять разную $Var(\hat{\varepsilon}_i)$ за гетероскедастичность, т.е. за разную $Var(\varepsilon_i)$. Впрочем, если гетероскедастичность сильная, то её будет видно и на нестандартизированных остатках.
@@ -169,7 +184,7 @@ nR^2 \sim \chi^2_{p-1}
 Тест Бройша-Пагана в R:
 ```{r}
 bptest(m1) # версия Коэнкера
-bptest(m1,studentize=FALSE) # классика Бройша-Пагана
+bptest(m1, studentize = FALSE) # классика Бройша-Пагана
 ```
 
 
@@ -195,9 +210,9 @@ bptest(m1,studentize=FALSE) # классика Бройша-Пагана
 
 Тест Голдфельда-Квандта в R:
 ```{r}
-h2 <- h[order(h$totsp),] # сменим порядок строк в табличке h
-m2 <- lm(price~totsp,data=h2) 
-gqtest(m2,fraction=0.2) # проведем GQ тест выкинув посередине 20% наблюдений
+h2 <- h[order(h$totsp), ] # сменим порядок строк в табличке h
+m2 <- lm(price~totsp, data = h2) 
+gqtest(m2, fraction = 0.2) # проведем GQ тест выкинув посередине 20% наблюдений
 ```
 
 
