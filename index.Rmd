@@ -1,8 +1,9 @@
 ---
 title: "Заметки по R"
 author: "Борис Демешев"
-date: "2 March 2015"
+date: "`r format(Sys.time(), '%d.%m.%Y')`"
 output: html_document
+lang: russian
 ---
 * [01. Работа с качественными переменными](cycle_files/01_qualitative_variable.html)
 * [02. Апельсины и простая регрессия](cycle_files/02_ols_oranges.html)
@@ -32,6 +33,7 @@ output: html_document
 
 
 Открыв любую заметку и заменив в адресной строке браузера разрешение `html` на `Rmd` можно увидеть исходный текст, по которому создавалась страничка.
+
 
 
 
