@@ -1,5 +1,9 @@
-Random Forest in R
-==================
+---
+title: "[Заметки по R](http://bdemeshev.github.io/r_cycle/): Случайный лес (random forest)"
+date: "`r format(Sys.time(), '%d.%m.%Y')`"
+output: html_document
+lang: russian
+---
 
 Загружаем нужные пакеты:
 ```{r}
@@ -76,7 +80,7 @@ I_E(Tree)=\sum_j P(A_j) \cdot I_E(A_j)
 
 Загружаем данные:
 ```{r}
-h <- read.table("~/em301/datasets/flats_moscow.txt",header=TRUE)
+h <- read.table("~/Documents/em301/datasets/flats_moscow.txt", header=TRUE)
 ```
 
 Сажаем случайный лес. Тут важно, что есть два алгоритма --- случайный лес для качественной переменной и случайный лес для количественной переменной. R сам определит, какой использовать, если правильно указать тип записимой переменной, numeric или factor. 

@@ -1,4 +1,10 @@
-# Оценка популярных моделей с помощью MCMC
+---
+title: "[Заметки по R](http://bdemeshev.github.io/r_cycle/): Оценка моделей с помощью MCMC
+"
+date: "`r format(Sys.time(), '%d.%m.%Y')`"
+output: html_document
+lang: russian
+---
 
 ```{r, message=FALSE, warning=FALSE}
 library("MCMCpack")

@@ -1,4 +1,9 @@
-# Мультиколлинеарность в R 
+---
+title: "[Заметки по R](http://bdemeshev.github.io/r_cycle/): Мультиколлинеарность"
+date: "`r format(Sys.time(), '%d.%m.%Y')`"
+output: html_document
+lang: russian
+---
 
 Загружаем нужные пакеты:
 ```{r, message=FALSE}

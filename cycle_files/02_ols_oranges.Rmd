@@ -1,36 +1,44 @@
-# Апельсины и простая регрессия
+---
+title: "[Заметки по R](http://bdemeshev.github.io/r_cycle/): Апельсины и простая регрессия"
+date: "`r format(Sys.time(), '%d.%m.%Y')`"
+output: html_document
+lang: russian
+---
 
-```{r}
+Подгрузим необходимые пакеты:
+
+```{r, message=FALSE}
 library("ggplot2") # кузявые графики
+library("lmtest") # тесты для линейных моделей
+library("dplyr") # манипуляции с данными
+library("memisc")
+library("pander")
 ```
 
 ## Простая работа с данными до оценки регрессий
 
 В R есть куча встроенных наборов данных. Многие пакеты в себе помимо функций содержат также еще и примеры данных. Например, пакет `ggplot2` содержит в себе данные по стоимости бриллиантов `diamonds`.
 
-Список всех наборов данных можно узнать с помощью команды `data()`
+Список всех наборов данных можно узнать с помощью команды `data()`.
 
-```{r}
-data()
-```
 
-Мы воспользуемся набором про апельсиновые деревья.
+Мы воспользуемся набором данных `Orange` про апельсиновые деревья.
 
 Общая информация:
 ```{r}
-h<-Orange
-summary(h) # описательные статистики
+summary(Orange) # описательные статистики
 ```
 
 Как выглядит начало таблички?
 ```{r}
-head(h)
+head(Orange)
 ```
 
 Структура набора данных. 
 ```{r}
-str(h)
+str(Orange)
 ```
+
 Команда `str` --- рабочая лошадка! Пакеты R пишет огромное количество людей, а она позволяет понять, из чего состоит тот или иной объект.
 
 
@@ -38,14 +46,15 @@ str(h)
 
 Графики
 ```{r}
-qplot(x=age,y=circumference,data=h,color=Tree)
+qplot(x=age, y=circumference, data=Orange, color=Tree)
 ```
 
 
-Оценим обыкновенную регрессию
+Оценим обыкновенную парную регрессию для того, чтобы понять, как диаметр дерева зависит от его возраста: 
+
 ```{r}
-model <- lm(circumference~age,data=h) # оцениваем модель
-report <-summary(model) # создаём отчет по модели
+model <- lm(circumference~age, data=Orange) # оцениваем модель
+report <- summary(model) # создаём отчет по модели
 report # выводим отчет на экран
 ```
 
@@ -68,23 +77,42 @@ report$adj.r.squared
 
 Коэффициенты:
 ```{r}
-model$coefficients
+coef(model)
 ```
 
 Доверительные интервалы для коэффициентов:
 ```{r}
-confint(model,level=0.90)
+confint(model, level=0.90)
 ```
 
-Построение прогнозов с доверительным интервалом для среднего:
+Отдельно табличка с результатами тестов:
 ```{r}
-new.data<-data.frame(age=c(100,200,300))
-predict(model,new.data,interval="confidence")
+coeftest(model)
 ```
 
-И с предиктивным интервалом:
+Несколько моделей можно сравнить рядом в одной табличке:
 ```{r}
-predict(model,new.data,interval="prediction")
+model_2 <- lm(data = Orange, circumference~age + I(age^2))
+mtable(model, model_2)
+```
+
+
+
+Построим точечный прогноз диаметра дерева:
+```{r}
+new.data <- data_frame(age=c(100,200,300))
+predict(model, new.data)
+```
+
+Прогноз с доверительным интервалом для среднего диаметра дерева:
+```{r}
+predict(model, new.data, interval="confidence")
+```
+
+
+И прогноз с предиктивным интервалом для конкретного наблюдения:
+```{r}
+predict(model, new.data, interval="prediction")
 ```
 
 

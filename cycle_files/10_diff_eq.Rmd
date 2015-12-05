@@ -1,5 +1,9 @@
-# Визуализация и решение обыкновенных дифференциальных уравнений в R
-
+---
+title: "[Заметки по R](http://bdemeshev.github.io/r_cycle/): Дифференциальные уравнения"
+date: "`r format(Sys.time(), '%d.%m.%Y')`"
+output: html_document
+lang: russian
+---
 
 ```{r, message=FALSE}
 library("knitr")

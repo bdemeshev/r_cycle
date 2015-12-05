@@ -1,8 +1,13 @@
-# 1. Работа с качественными данными в R
+---
+title: "[Заметки по R](http://bdemeshev.github.io/r_cycle/): Работа с качественными данными"
+date: "`r format(Sys.time(), '%d.%m.%Y')`"
+output: html_document
+lang: russian
+---
 
 Создаем текстовую переменную из 100 случайно выбранных слов "yes", "no", "maybe". Затем посмотрим её описание.
 ```{r}
-x <- sample(size=100,c("yes","no","maybe"),rep=TRUE)
+x <- sample(size = 100, c("yes","no","maybe"), rep = TRUE)
 str(x) 
 ```
 
@@ -24,14 +29,16 @@ plot(x.factor,main="Любите ли вы сыр?",xlab="Ответ мышки"
 ```{r, warning=FALSE}
 library("ggplot2")
 h <- data.frame(x.factor)
-qplot(x.factor,data=h)+labs(x="Ответ мышки",y="Количество мышек",title="Любите ли вы сыр?")
+qplot(x.factor, data = h) + 
+  labs(x = "Ответ мышки", y = "Количество мышек",
+       title = "Любите ли вы сыр?")
 ```
 
 Есть пакет `vcd` с кучей графиков для нескольких качественных переменных. Например, мозаичный график:
 ```{r}
 library("vcd")
 g <- Titanic
-mosaic(~Class+Sex+Survived,data=g,shade=TRUE)
+mosaic(~Class+Sex+Survived, data = g, shade = TRUE)
 ```
 
 
@@ -43,16 +50,16 @@ mosaic(~Class+Sex+Survived,data=g,shade=TRUE)
 
 Устанавливаем пакет `alluvial`
 ```{r, eval=FALSE}
-devtools::install_github(repo="alluvial",username="mbojan")
+devtools::install_github("mbojan/alluvial")
 ```
 
 Загружаем `alluvial`
 ```{r}
 library("alluvial")
 tit <- as.data.frame(Titanic)
-alluvial( tit[,1:4], freq=tit$Freq, border=NA,
+alluvial(tit[,1:4], freq=tit$Freq, border = NA,
          hide = tit$Freq < quantile(tit$Freq, .50),
-         col=ifelse( tit$Survived == "No", "red", "gray") )
+         col = ifelse(tit$Survived == "No", "red", "gray") )
 ```
 
 
@@ -81,6 +88,5 @@ str(x.num)
 
 Почиташки:
 
-* [Cписок заметок](https://github.com/bdemeshev/em301/wiki/R)
 * [Пакет alluvial](http://bc.bojanorama.pl/2014/03/alluvial-diagrams/)
 

@@ -1,6 +1,10 @@
 ---
+title: "[Заметки по R](http://bdemeshev.github.io/r_cycle/): Байесовская векторная авторегрессия"
+date: "`r format(Sys.time(), '%d.%m.%Y')`"
 output: html_document
+lang: russian
 ---
+
 Загружаем пакеты
 
 ```{r, message=FALSE}

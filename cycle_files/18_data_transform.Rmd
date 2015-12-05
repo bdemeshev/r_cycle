@@ -1,4 +1,9 @@
-# Преобразования данных
+---
+title: "[Заметки по R](http://bdemeshev.github.io/r_cycle/): Преобразования данных"
+date: "`r format(Sys.time(), '%d.%m.%Y')`"
+output: html_document
+lang: russian
+---
 
 
 !неплохо бы обновить до dplyr-reshape2
@@ -30,7 +35,7 @@ library("ggplot2") # графики
 
 Загрузим данные по стоимости квартир в Москве:
 ```{r}
-file <- "~/em301/datasets/flats_moscow.txt"
+file <- "~/Documents/em301/datasets/flats_moscow.txt"
 h <- read.table(file,header=TRUE)
 ```
 

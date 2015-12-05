@@ -1,4 +1,9 @@
-# Парсинг данных в R
+---
+title: "[Заметки по R](http://bdemeshev.github.io/r_cycle/): Парсинг данных"
+date: "`r format(Sys.time(), '%d.%m.%Y')`"
+output: html_document
+lang: russian
+---
 
 ### НЕ компилируется
 

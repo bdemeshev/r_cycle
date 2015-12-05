@@ -1,4 +1,9 @@
-# Метод опорных векторов в R (Support Vector Machine)
+---
+title: "[Заметки по R](http://bdemeshev.github.io/r_cycle/): Метод опорных векторов (Support Vector Machine)"
+date: "`r format(Sys.time(), '%d.%m.%Y')`"
+output: html_document
+lang: russian
+---
 
 Загружаем нужные пакеты:
 ```{r, message=FALSE}
@@ -8,7 +13,7 @@ library("knitr")
 library("ggplot2") # графики
 library("kernlab") # Support Vector Machines
 # install.packages("kernlab") # может быть нужно установить пакеты...
-library("plyr")
+library("dplyr")
 library("caret")
 ```
 
@@ -49,7 +54,7 @@ SVM пытается разделить гиперплоскостью наши 
 
 Загружаем данные по стоимости квартир в Москве:
 ```{r}
-filename <- "~/em301/datasets/flats_moscow.txt"
+filename <- "~/Documents/em301/datasets/flats_moscow.txt"
 h <- read.table(filename,header=TRUE)
 str(h)
 ```
@@ -222,7 +227,7 @@ f_cross(1,1) # тестируем сделанную функцию
 
 Применяем её ко всем возможным $C$ и $\sigma$
 ```{r}
-d <- ddply(d,~C+sigma,transform,cr=f_cross(sigma,C))
+d <- mutate(d, cr = f_cross(sigma,C))
 head(d)
 ```
 
@@ -230,7 +235,7 @@ head(d)
 
 Есть замечательный пакет `caret` созвучный с carrot :) В нем реализовано и деление выборки на тестовую и обучающую части и подбор параметров  с помощью кросс-валидации для кучи методов, в том числе для SVM. Морковка очень вкусная :)
 
-```{r}
+```{r, warning=FALSE}
 library(caret)
 ctrl <- trainControl(classProbs=TRUE)
 fit <- train(brick~price+totsp+livesp+kitsp+dist+metrdist+walk+floor+code,

@@ -1,4 +1,10 @@
-# Анализ качественных переменных в R
+---
+title: "[Заметки по R](http://bdemeshev.github.io/r_cycle/): Анализ качественных переменных"
+date: "`r format(Sys.time(), '%d.%m.%Y')`"
+output: html_document
+lang: russian
+---
+
 
 Скажем knitr'у, что надо кэшировать куски для ускорения работы...
 ```{r}
@@ -9,12 +15,12 @@ library("knitr")
 
 Загрузим данные по стоимости квартир в Москве. Проверим, что они загрузились...
 ```{r}
-h <- read.table("~/em301/datasets/flats_moscow.txt",header=TRUE)
+h <- read.table("~/Documents/em301/datasets/flats_moscow.txt", header = TRUE)
 str(h)
 ```
 
 
-Загрузим пакет ggplot2 и установим чёрно-белую тему для всех последующих графиков
+Загрузим пакет `ggplot2` и установим чёрно-белую тему для всех последующих графиков
 ```{r}
 library("reshape2")
 library("ggplot2")
@@ -102,7 +108,7 @@ library(vcd)
 mosaic(data=h,~brick+walk+floor,shade=TRUE)
 ```
 
-Остальные заметочки, [https://github.com/bdemeshev/em301/wiki/r_cycle](https://github.com/bdemeshev/em301/wiki/r_cycle)
+
 
 
 

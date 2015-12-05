@@ -1,4 +1,9 @@
-# Карты, деньги, два ствола
+---
+title: "[Заметки по R](http://bdemeshev.github.io/r_cycle/): Карты, деньги, два ствола"
+date: "`r format(Sys.time(), '%d.%m.%Y')`"
+output: html_document
+lang: russian
+---
 
 ## НЕ компилируется
 
