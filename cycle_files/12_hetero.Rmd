@@ -47,7 +47,7 @@ theme_set(theme_bw())
 Файл с данными по стоимости квартир в Москве доступен по ссылке [goo.gl/zL5JQ](http://goo.gl/zL5JQ)
 
 ```{r, "read table"}
-filename <- "~/Documents/em301/datasets/flats_moscow.txt"
+filename <- "../datasets/flats_moscow.txt"
 h <- read.table(filename, header=TRUE)
 
 qplot(totsp, price, data=h)
