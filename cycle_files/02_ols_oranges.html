@@ -61,7 +61,7 @@ img {
 
 <div id="header">
 <h1 class="title"><a href="http://bdemeshev.github.io/r_cycle/">Заметки по R</a>: Апельсины и простая регрессия</h1>
-<h4 class="date"><em>05.12.2015</em></h4>
+<h4 class="date"><em>15.12.2015</em></h4>
 </div>
 
 
@@ -69,22 +69,28 @@ img {
 <pre class="r"><code>library(&quot;ggplot2&quot;) # кузявые графики
 library(&quot;lmtest&quot;) # тесты для линейных моделей
 library(&quot;dplyr&quot;) # манипуляции с данными
-library(&quot;memisc&quot;)
-library(&quot;pander&quot;)</code></pre>
+library(&quot;memisc&quot;) # сравнение моделей
+library(&quot;pander&quot;) # таблички в markdown
+library(&quot;broom&quot;) # стандартизация информации о модели и описательные статистики</code></pre>
 <div id="------" class="section level2">
 <h2>Простая работа с данными до оценки регрессий</h2>
 <p>В R есть куча встроенных наборов данных. Многие пакеты в себе помимо функций содержат также еще и примеры данных. Например, пакет <code>ggplot2</code> содержит в себе данные по стоимости бриллиантов <code>diamonds</code>.</p>
 <p>Список всех наборов данных можно узнать с помощью команды <code>data()</code>.</p>
 <p>Мы воспользуемся набором данных <code>Orange</code> про апельсиновые деревья.</p>
-<p>Общая информация:</p>
-<pre class="r"><code>summary(Orange) # описательные статистики</code></pre>
-<pre><code>##  Tree       age         circumference  
-##  3:7   Min.   : 118.0   Min.   : 30.0  
-##  1:7   1st Qu.: 484.0   1st Qu.: 65.5  
-##  5:7   Median :1004.0   Median :115.0  
-##  2:7   Mean   : 922.1   Mean   :115.9  
-##  4:7   3rd Qu.:1372.0   3rd Qu.:161.5  
-##        Max.   :1582.0   Max.   :214.0</code></pre>
+<p>Совсем кратко о наборе данных:</p>
+<pre class="r"><code>glance(Orange)</code></pre>
+<pre><code>##   nrow ncol complete.obs na.fraction
+## 1   35    3           35           0</code></pre>
+<p>Описательные статистики:</p>
+<pre class="r"><code>tidy(Orange) </code></pre>
+<pre><code>##          column  n     mean        sd median  trimmed      mad min  max
+## 1         Tree* 35   3.0000   1.43486      3   3.0000   1.4826   1    5
+## 2           age 35 922.1429 491.86453   1004 937.0690 545.5968 118 1582
+## 3 circumference 35 115.8571  57.48818    115 115.1379  77.0952  30  214
+##   range          skew  kurtosis         se
+## 1     4  0.000000e+00 -1.395755  0.2425356
+## 2  1464 -2.556469e-01 -1.293623 83.1402798
+## 3   184  1.655431e-05 -1.239487  9.7172759</code></pre>
 <p>Как выглядит начало таблички?</p>
 <pre class="r"><code>head(Orange)</code></pre>
 <pre><code>## Grouped Data: circumference ~ age | Tree
@@ -175,27 +181,27 @@ mtable(model, model_2)</code></pre>
 ## model: lm(formula = circumference ~ age, data = Orange)
 ## model_2: lm(formula = circumference ~ age + I(age^2), data = Orange)
 ## 
-## =====================================
-##                   model     model_2  
-## -------------------------------------
-## (Intercept)     17.400      10.287   
-##                 (8.623)    (13.199)  
-## age              0.107***    0.131***
-##                 (0.008)     (0.035)  
-## I(age^2)                    -0.000   
-##                             (0.000)  
-## -------------------------------------
-## R-squared           0.835      0.837 
-## adj. R-squared      0.830      0.827 
-## sigma              23.738     23.915 
-## F                 166.416     82.234 
-## p                   0.000      0.000 
-## Log-likelihood   -159.480   -159.202 
-## Deviance        18594.744  18301.779 
-## AIC               324.961    326.405 
-## BIC               329.627    332.626 
-## N                  35         35     
-## =====================================</code></pre>
+## =========================================
+##                     model     model_2    
+## -----------------------------------------
+##   (Intercept)     17.400      10.287     
+##                   (8.623)    (13.199)    
+##   age              0.107***    0.131***  
+##                   (0.008)     (0.035)    
+##   I(age^2)                    -0.000     
+##                               (0.000)    
+## -----------------------------------------
+##   R-squared            0.8        0.8    
+##   adj. R-squared       0.8        0.8    
+##   sigma               23.7       23.9    
+##   F                  166.4       82.2    
+##   p                    0.0        0.0    
+##   Log-likelihood    -159.5     -159.2    
+##   Deviance         18594.7    18301.8    
+##   AIC                325.0      326.4    
+##   BIC                329.6      332.6    
+##   N                   35         35      
+## =========================================</code></pre>
 <p>Построим точечный прогноз диаметра дерева:</p>
 <pre class="r"><code>new.data &lt;- data_frame(age=c(100,200,300))
 predict(model, new.data)</code></pre>
@@ -213,8 +219,50 @@ predict(model, new.data)</code></pre>
 ## 1 28.07668 -22.8219365 78.97530
 ## 2 38.75372 -11.7129209 89.22035
 ## 3 49.43075  -0.6568182 99.51831</code></pre>
+<p>Есть удобный пакет <code>broom</code>. Основная его философия проста — всю инфу о модели можно выдавать в data.frame. Пакет <code>broom</code> делит информацию на три уровня:</p>
+<ul>
+<li>краткая о модели в целом</li>
+<li>информация о коэффициентах</li>
+<li>то, что можно добавить к исходным данным после оценки модели.</li>
+</ul>
+<p>О модели в целом:</p>
+<pre class="r"><code>glance(model)</code></pre>
+<pre><code>##   r.squared adj.r.squared    sigma statistic      p.value df    logLik
+## 1 0.8345167      0.829502 23.73767  166.4159 1.930596e-14  2 -159.4804
+##        AIC      BIC deviance df.residual
+## 1 324.9607 329.6268 18594.74          33</code></pre>
+<p>Более подробную о коэффициентах:</p>
+<pre class="r"><code>tidy(model)</code></pre>
+<pre><code>##          term   estimate   std.error statistic      p.value
+## 1 (Intercept) 17.3996502 8.622659801  2.017898 5.179267e-02
+## 2         age  0.1067703 0.008276623 12.900228 1.930596e-14</code></pre>
+<p>Довесим исходные данные предсказанными значениями, остатками и прочим</p>
+<pre class="r"><code>orange_plus &lt;- augment(model, Orange)
+glimpse(orange_plus)</code></pre>
+<pre><code>## Observations: 35
+## Variables:
+## $ Tree          (fctr) 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3,...
+## $ age           (dbl) 118, 484, 664, 1004, 1231, 1372, 1582, 118, 484,...
+## $ circumference (dbl) 30, 58, 87, 115, 120, 142, 145, 33, 69, 111, 156...
+## $ .fitted       (dbl) 29.99855, 69.07649, 88.29515, 124.59706, 148.833...
+## $ .se.fit       (dbl) 7.771498, 5.408300, 4.545789, 4.069196, 4.757519...
+## $ .resid        (dbl) 0.001451402, -11.076487573, -1.295146086, -9.597...
+## $ .hat          (dbl) 0.10718481, 0.05190932, 0.03667265, 0.02938603, ...
+## $ .sigma        (dbl) 24.10572, 24.02169, 24.10459, 24.04413, 23.53757...
+## $ .cooksd       (dbl) 2.513501e-10, 6.286999e-03, 5.882009e-05, 2.5492...
+## $ .std.resid    (dbl) 0.0000647096, -0.4792244734, -0.0555896161, -0.4...</code></pre>
+<p>К исходным данным добавлены:</p>
+<ul>
+<li><code>.fitted</code> — предсказанные <span class="math">\(\hat y_i\)</span></li>
+<li><code>.resid</code> — остатки <span class="math">\(\hat\varepsilon_i\)</span></li>
+<li><code>.std.resid</code> — стандартизованные остатки, <span class="math">\(s_i = \frac{\varepsilon_i}{\sqrt{\hat{\sigma}^2(1-h_{ii})}}\)</span> … дописать</li>
+</ul>
 <p>Что еще можно вытащить из оцененной модели, можно узнать несколькими способами. Например, стоит почитать <code>help(summary.lm)</code>. Можно еще набрать в консоли <code>model$</code> и пару раз кликнуть <code>&lt;Tab&gt;</code>. Еще имеет смысл попробовать нажать <code>&lt;Tab&gt;</code> после <code>summ$</code>. Можно набрать <code>str(model)</code>. Да еще гугл есть.</p>
 <p>А вообще бывает полезно изобрести велосипед. Пусть где-то в R уже есть функция, считающая доверительный интервал для прогноза. Если вместо этого написать эту функцию своими руками, то можно получить плюс один к экспириенсу и перейти на следующий уровень.</p>
+<p>Почиташки:</p>
+<ul>
+<li>Виньетка <a href="https://github.com/dgrtwo/broom">к пакету <code>broom</code></a></li>
+</ul>
 </div>
 
 
