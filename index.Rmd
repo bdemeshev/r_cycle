@@ -29,11 +29,16 @@ lang: russian
 * [22. Случайный лес](cycle_files/22_forest.html)
 * [23. Загрузка данных по России](cycle_files/23_load_rus_data.html)
 * 24. Работа с данными rlms (план)
+* 25. Графики --- дело тонкое!
+
 
 
 
 Открыв любую заметку и заменив в адресной строке браузера разрешение `html` на `Rmd` можно увидеть исходный текст, по которому создавалась страничка.
 
+Репозиторий [заметок на гитхабе](https://github.com/bdemeshev/r_cycle). Скачать все [заметки в один клик](https://github.com/bdemeshev/r_cycle/archive/gh-pages.zip).
+
+Заметки распространяются по лицензии [Creative Commons Attribution-NonCommercial-ShareAlike](http://creativecommons.org/licenses/by-nc-sa/3.0/deed.ru)
 
 
 
