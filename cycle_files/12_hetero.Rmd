@@ -296,6 +296,6 @@ gqtest(m2, fraction = 0.2) # проведем GQ тест выкинув пос�
 * [Описание пакета `sandwich`](http://cran.r-project.org/web/packages/sandwich/vignettes/sandwich.pdf) с очень правильным изложением современного взгляда на гетероскедастичность
 * Breusch, Pagan, [Simple test for heteroskedasticity](http://www.jstor.org/stable/1911963)
 * White, [A Heteroskedasticity-Consistent Covariance Matrix Estimator and a Direct Test for Heteroskedasticity](http://www.jstor.org/stable/1912934)
-* Koenker, [A note on studentizing a test for heteroscedasticity](http://www.sciencedirect.com.sci-hub.io/science/article/pii/0304407681900622)
+* Koenker, [A note on studentizing a test for heteroscedasticity](http://www.sciencedirect.com/science/article/pii/0304407681900622), на [sci-hub](http://www.sciencedirect.com.sci-hub.io/science/article/pii/0304407681900622)
 
 
