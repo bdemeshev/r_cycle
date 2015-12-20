@@ -52,14 +52,15 @@ str(Orange)
 
 Графики
 ```{r}
-qplot(x=age, y=circumference, data=Orange, color=Tree)
+qplot(data = Orange, x = age, 
+      y = circumference, color = Tree)
 ```
 
 
 Оценим обыкновенную парную регрессию для того, чтобы понять, как диаметр дерева зависит от его возраста: 
 
 ```{r}
-model <- lm(circumference~age, data=Orange) # оцениваем модель
+model <- lm(circumference~age, data = Orange) # оцениваем модель
 report <- summary(model) # создаём отчет по модели
 report # выводим отчет на экран
 ```
@@ -88,7 +89,7 @@ coef(model)
 
 Доверительные интервалы для коэффициентов:
 ```{r}
-confint(model, level=0.90)
+confint(model, level = 0.90)
 ```
 
 Отдельно табличка с результатами тестов:
@@ -98,7 +99,8 @@ coeftest(model)
 
 Несколько моделей можно сравнить рядом в одной табличке:
 ```{r}
-model_2 <- lm(data = Orange, circumference~age + I(age^2))
+model_2 <- lm(data = Orange, 
+              circumference~age + I(age^2))
 mtable(model, model_2)
 ```
 
@@ -106,19 +108,19 @@ mtable(model, model_2)
 
 Построим точечный прогноз диаметра дерева:
 ```{r}
-new.data <- data_frame(age=c(100,200,300))
+new.data <- data_frame( age= c(100, 200, 300))
 predict(model, new.data)
 ```
 
 Прогноз с доверительным интервалом для среднего диаметра дерева:
 ```{r}
-predict(model, new.data, interval="confidence")
+predict(model, new.data, interval = "confidence")
 ```
 
 
 И прогноз с предиктивным интервалом для конкретного наблюдения:
 ```{r}
-predict(model, new.data, interval="prediction")
+predict(model, new.data, interval = "prediction")
 ```
 
 Есть удобный пакет `broom`. Основная его философия проста --- всю инфу о модели можно выдавать в data.frame. Пакет `broom` делит информацию на три уровня: 
