@@ -9,13 +9,14 @@ lang: russian
 library("knitr")
 opts_chunk$set(
   # cache=FALSE,
-               message=FALSE,warning=FALSE) 
+               message=FALSE, warning=FALSE) 
 
 library("ggplot2") # для построения графиков
 library("rasterVis")
 library("fields")
-library("deSolve")
-library("bvpSolve")
+library("deSolve") # решение дифф. уравнений с начальными условиями
+library("bvpSolve") # решение дифф. уравнений с краевыми условиями
+library("dplyr") # манипуляции с данными
 
 ```
 
@@ -42,32 +43,31 @@ $$
 ```{r}
 y1 <- seq(-6, 6, .05)
 y2 <- seq(-6, 6, .05)
-df <- expand.grid(y1=y1, y2=y2)
-df$y1dot <- df$y2
-df$y2dot <- df$y1+cos(df$y2)
+df <- expand.grid(y1 = y1, y2 = y2)
+df <- mutate(df, y1dot = y2, y2dot = y1 + cos(y2))
 ```
 
 
 Рассчитываем длины и углы для стрелочек, помещаем результат в объект `Raster`.
 ```{r}
-df$len <- sqrt(df$y1dot^2+df$y2dot^2)
-df$angle <- atan2(df$y1dot,df$y2dot)
+df <- mutate(df, len = sqrt(y1dot^2 + y2dot^2), 
+             angle = atan2(y1dot, y2dot))
 
-df2 <- df[c("y1","y2","len","angle")]
+df2 <- df[c("y1", "y2", "len", "angle")]
 
-rast <- rasterFromXYZ(df2,crs=proj)
+rast <- rasterFromXYZ(df2, crs = proj)
 ```
 
 
 Строим классический график со стрелочками
 ```{r}
-vectorplot(rast,isField=TRUE)
+vectorplot(rast, isField = TRUE)
 ```
 
 
 Строим няку с капельками
 ```{r}
-streamplot(rast, isField=TRUE)
+streamplot(rast, isField = TRUE)
 ```
 
 
@@ -75,12 +75,11 @@ streamplot(rast, isField=TRUE)
 ```{r}
 y1 <- seq(-6, 6, .5)
 y2 <- seq(-6, 6, .5)
-df <- expand.grid(y1=y1, y2=y2)
-df$y1dot <- df$y2
-df$y2dot <- df$y1+cos(df$y2)
-plot(df$y1,df$y2,pch=".")
-arrow.plot( df$y1,df$y2,df$y1dot,df$y2dot,
-            arrow.ex=0.03,length=0.05) 
+df <- expand.grid(y1 = y1, y2 = y2)
+df <- mutate(df, y1dot = y2, y2dot = y1 + cos(y2))
+plot(df$y1, df$y2, pch = ".")
+arrow.plot( df$y1, df$y2, df$y1dot, df$y2dot,
+            arrow.ex=0.03, length=0.05) 
 ```
 
 
@@ -91,31 +90,31 @@ arrow.plot( df$y1,df$y2,df$y1dot,df$y2dot,
 
 Описываем саму систему:
 ```{r}
-eq1 <- function(t,y,parampampam) {
+eq1 <- function(t, y, parampampam) {
   return(list(c(
     y[2],
-    y[1]+cos(y[2])    
+    y[1] + cos(y[2])    
   )))
 }
 ```
 
 Начальные условия:
 ```{r}
-y.start <- c(y1=1,y2=4) 
+y.start <- c(y1 = 1, y2 = 4) 
 ```
 
 Точки, в которых компьютер будет считать функцию:
 ```{r}
-t <- seq(0,10,by=0.01)
+t <- seq(0, 10, by = 0.01)
 ```
 
 
 Решаем
 ```{r}
-sol <- ode(y=y.start,times=t,func=eq1)
+sol <- ode(y = y.start, times = t, func = eq1)
 sol <- data.frame(sol)
 head(sol)
-qplot(data=sol,time,y1)
+qplot(data=sol, time, y1)
 ```
 
 Функция `ode` возвращает матрицу, а для рисования графиков удобнее табличка с данными, data.frame. Строчка `sol <- data.frame(sol)` переделывает матрицу в таблицу с данными.
@@ -126,40 +125,40 @@ qplot(data=sol,time,y1)
 
 Описываем саму систему:
 ```{r}
-eq1 <- function(t,y,parampampam) {
+eq1 <- function(t, y, parampampam) {
   return(list(c(
     y[2],
-    y[1]+cos(y[2])    
+    y[1] + cos(y[2])    
   )))
 }
 ```
 
 Граничные условия:
 ```{r}
-y.start <- c(y1=1,y2=NA) 
-y.final <- c(y1=42,y2=NA)
+y.start <- c(y1 = 1, y2 = NA) 
+y.final <- c(y1 = 42, y2 = NA)
 ```
 
 Точки, в которых компьютер будет считать функцию:
 ```{r}
-t <- seq(0,10,by=0.01)
+t <- seq(0, 10, by = 0.01)
 ```
 
 
 Решаем
 ```{r}
-sol <- bvptwp(yini=y.start,yend=y.final,
-           x=t,func=eq1,
-           nmax=2000)
+sol <- bvptwp(yini = y.start, yend = y.final,
+           x = t, func = eq1,
+           nmax = 2000)
 sol <- data.frame(sol)
 head(sol)
-qplot(data=sol,x,y1)
+qplot(data = sol, x, y1)
 ```
 
 
 ### Бесплатное приложение. Изображение функций двух переменных
 
-Есть несколько способов представить себе функцию от двух переменных, $z(x,y)$:
+Есть несколько способов представить себе функцию от двух переменных, $z(x, y)$:
 
 * 3D график
 * Линии уровня
@@ -168,19 +167,20 @@ qplot(data=sol,x,y1)
 
 Создаем data.frame с декартовым произведением двух векторов
 ```{r}
-df <- expand.grid(x=seq(-2, 2, .01), y=seq(-2, 2, .01))
+df <- expand.grid(x = seq(-2, 2, .01), y = seq(-2, 2, .01))
 ```
 
 Изобразим функцию $z(x,y)=(3\cdot x^2+y)\cdot e^{-x^2-y^2}$.
 
 Cоздаем переменную z как функцию от x и y 
 ```{r}
-df$z <- with((3*x^2 + y)*exp(-x^2-y^2),data=df)
+df <- mutate(df, z = (3 * x^2 + y) * exp(-x^2 - y^2))
+
 ```
 
 
 ```{r}
-r <- rasterFromXYZ(df, crs=proj)
+r <- rasterFromXYZ(df, crs = proj)
 ```
 
 Линии уровня функции z
