@@ -70,7 +70,7 @@ dygraph(nhtemp, main = "New Haven Temperatures") %>%
   dyRangeSelector(dateWindow = c("1920-01-01", "1960-01-01"))
 ```
 
-
+Гистограмма с переключением:
 ```{r, results = 'asis'}
 library("rCharts")
 hair_eye_male <- subset(as.data.frame(HairEyeColor), Sex == "Male")
@@ -78,13 +78,11 @@ a <- nPlot(Freq ~ Hair, group = 'Eye', data = hair_eye_male, type = 'multiBarCha
 a$show("iframesrc", cdn = TRUE)
 ```
 
-
 Если `hmtl`-виджет очень понравился, то его можно и в статический документ экспортировать. 
-
-![We need to go deeper](http://i2.kym-cdn.com/photos/images/original/000/531/557/a88.jpg)
 
 Виджет, чтобы экспортировать виджеты, называется [exportwidget](https://github.com/timelyportfolio/exportwidget). 
 
+![We need to go deeper](http://i2.kym-cdn.com/photos/images/original/000/531/557/a88.jpg)
 
 Автоматическое сохранение виджетов в png/pdf также возможно, например, с помощью пакета `webshot`.  Для использования `webshot` потребуется установить [`phantomjs`](http://phantomjs.org/) и добавить путь в переменную `PATH`. На маке есть маленький баг в `phantomjs` и есть [исправление для него](https://github.com/eugene1g/phantomjs/releases). Проверить, что R видит `phantomjs` можно командой `Sys.which("phantomjs")`. В ответ R должен выдать путь к установленному исполняемому файлу `phantomjs`.
 
