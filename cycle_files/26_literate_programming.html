@@ -106,14 +106,14 @@ map &lt;- leaflet() %&gt;%
   addMarkers(lng = 37.6087, lat = 55.72069, 
              popup = &quot;Особняк Симоно&quot;)
 map</code></pre>
-<p><div id="htmlwidget-9692" style="width:672px;height:480px;" class="leaflet"></div>
-<script type="application/json" data-for="htmlwidget-9692">{"x":{"calls":[{"method":"addTiles","args":["http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"maxNativeZoom":null,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"continuousWorld":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":null,"unloadInvisibleTiles":null,"updateWhenIdle":null,"detectRetina":false,"reuseTiles":false,"attribution":"&copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>"}]},{"method":"addMarkers","args":[55.72069,37.6087,null,null,null,{"clickable":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},"Особняк Симоно",null,null]}],"limits":{"lat":[55.72069,55.72069],"lng":[37.6087,37.6087]}},"evals":[]}</script></p>
+<p><div id="htmlwidget-7390" style="width:672px;height:480px;" class="leaflet"></div>
+<script type="application/json" data-for="htmlwidget-7390">{"x":{"calls":[{"method":"addTiles","args":["http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"maxNativeZoom":null,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"continuousWorld":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":null,"unloadInvisibleTiles":null,"updateWhenIdle":null,"detectRetina":false,"reuseTiles":false,"attribution":"&copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>"}]},{"method":"addMarkers","args":[55.72069,37.6087,null,null,null,{"clickable":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},"Особняк Симоно",null,null]}],"limits":{"lat":[55.72069,55.72069],"lng":[37.6087,37.6087]}},"evals":[]}</script></p>
 <p>Временной ряд с масштабированием:</p>
 <pre class="r"><code>library(&quot;dygraphs&quot;)
 dygraph(nhtemp, main = &quot;New Haven Temperatures&quot;) %&gt;% 
   dyRangeSelector(dateWindow = c(&quot;1920-01-01&quot;, &quot;1960-01-01&quot;))</code></pre>
-<p><div id="htmlwidget-9678" style="width:672px;height:480px;" class="dygraphs"></div>
-<script type="application/json" data-for="htmlwidget-9678">{"x":{"attrs":{"title":"New Haven Temperatures","labels":["year","V1"],"legend":"auto","retainDateWindow":false,"axes":{"x":{"pixelsPerLabel":50}},"showRangeSelector":true,"dateWindow":["1920-01-01T00:00:00Z","1960-01-01T00:00:00Z"],"rangeSelectorHeight":40,"rangeSelectorPlotFillColor":" #A7B1C4","rangeSelectorPlotStrokeColor":"#808FAB","interactionModel":"Dygraph.Interaction.defaultModel"},"scale":"yearly","annotations":[],"shadings":[],"events":[],"data":[["1912-01-01T00:00:00Z","1913-01-01T00:00:00Z","1914-01-01T00:00:00Z","1915-01-01T00:00:00Z","1916-01-01T00:00:00Z","1917-01-01T00:00:00Z","1918-01-01T00:00:00Z","1919-01-01T00:00:00Z","1920-01-01T00:00:00Z","1921-01-01T00:00:00Z","1922-01-01T00:00:00Z","1923-01-01T00:00:00Z","1924-01-01T00:00:00Z","1925-01-01T00:00:00Z","1926-01-01T00:00:00Z","1927-01-01T00:00:00Z","1928-01-01T00:00:00Z","1929-01-01T00:00:00Z","1930-01-01T00:00:00Z","1931-01-01T00:00:00Z","1932-01-01T00:00:00Z","1933-01-01T00:00:00Z","1934-01-01T00:00:00Z","1935-01-01T00:00:00Z","1936-01-01T00:00:00Z","1937-01-01T00:00:00Z","1938-01-01T00:00:00Z","1939-01-01T00:00:00Z","1940-01-01T00:00:00Z","1941-01-01T00:00:00Z","1942-01-01T00:00:00Z","1943-01-01T00:00:00Z","1944-01-01T00:00:00Z","1945-01-01T00:00:00Z","1946-01-01T00:00:00Z","1947-01-01T00:00:00Z","1948-01-01T00:00:00Z","1949-01-01T00:00:00Z","1950-01-01T00:00:00Z","1951-01-01T00:00:00Z","1952-01-01T00:00:00Z","1953-01-01T00:00:00Z","1954-01-01T00:00:00Z","1955-01-01T00:00:00Z","1956-01-01T00:00:00Z","1957-01-01T00:00:00Z","1958-01-01T00:00:00Z","1959-01-01T00:00:00Z","1960-01-01T00:00:00Z","1961-01-01T00:00:00Z","1962-01-01T00:00:00Z","1963-01-01T00:00:00Z","1964-01-01T00:00:00Z","1965-01-01T00:00:00Z","1966-01-01T00:00:00Z","1967-01-01T00:00:00Z","1968-01-01T00:00:00Z","1969-01-01T00:00:00Z","1970-01-01T00:00:00Z","1971-01-01T00:00:00Z"],[49.9,52.3,49.4,51.1,49.4,47.9,49.8,50.9,49.3,51.9,50.8,49.6,49.3,50.6,48.4,50.7,50.9,50.6,51.5,52.8,51.8,51.1,49.8,50.2,50.4,51.6,51.8,50.9,48.8,51.7,51,50.6,51.7,51.5,52.1,51.3,51,54,51.4,52.7,53.1,54.6,52,52,50.9,52.6,50.2,52.6,51.6,51.9,50.5,50.9,51.7,51.4,51.7,50.8,51.9,51.8,51.9,53]]},"evals":["attrs.interactionModel"]}</script></p>
+<p><div id="htmlwidget-9365" style="width:672px;height:480px;" class="dygraphs"></div>
+<script type="application/json" data-for="htmlwidget-9365">{"x":{"attrs":{"title":"New Haven Temperatures","labels":["year","V1"],"legend":"auto","retainDateWindow":false,"axes":{"x":{"pixelsPerLabel":50}},"showRangeSelector":true,"dateWindow":["1920-01-01T00:00:00Z","1960-01-01T00:00:00Z"],"rangeSelectorHeight":40,"rangeSelectorPlotFillColor":" #A7B1C4","rangeSelectorPlotStrokeColor":"#808FAB","interactionModel":"Dygraph.Interaction.defaultModel"},"scale":"yearly","annotations":[],"shadings":[],"events":[],"data":[["1912-01-01T00:00:00Z","1913-01-01T00:00:00Z","1914-01-01T00:00:00Z","1915-01-01T00:00:00Z","1916-01-01T00:00:00Z","1917-01-01T00:00:00Z","1918-01-01T00:00:00Z","1919-01-01T00:00:00Z","1920-01-01T00:00:00Z","1921-01-01T00:00:00Z","1922-01-01T00:00:00Z","1923-01-01T00:00:00Z","1924-01-01T00:00:00Z","1925-01-01T00:00:00Z","1926-01-01T00:00:00Z","1927-01-01T00:00:00Z","1928-01-01T00:00:00Z","1929-01-01T00:00:00Z","1930-01-01T00:00:00Z","1931-01-01T00:00:00Z","1932-01-01T00:00:00Z","1933-01-01T00:00:00Z","1934-01-01T00:00:00Z","1935-01-01T00:00:00Z","1936-01-01T00:00:00Z","1937-01-01T00:00:00Z","1938-01-01T00:00:00Z","1939-01-01T00:00:00Z","1940-01-01T00:00:00Z","1941-01-01T00:00:00Z","1942-01-01T00:00:00Z","1943-01-01T00:00:00Z","1944-01-01T00:00:00Z","1945-01-01T00:00:00Z","1946-01-01T00:00:00Z","1947-01-01T00:00:00Z","1948-01-01T00:00:00Z","1949-01-01T00:00:00Z","1950-01-01T00:00:00Z","1951-01-01T00:00:00Z","1952-01-01T00:00:00Z","1953-01-01T00:00:00Z","1954-01-01T00:00:00Z","1955-01-01T00:00:00Z","1956-01-01T00:00:00Z","1957-01-01T00:00:00Z","1958-01-01T00:00:00Z","1959-01-01T00:00:00Z","1960-01-01T00:00:00Z","1961-01-01T00:00:00Z","1962-01-01T00:00:00Z","1963-01-01T00:00:00Z","1964-01-01T00:00:00Z","1965-01-01T00:00:00Z","1966-01-01T00:00:00Z","1967-01-01T00:00:00Z","1968-01-01T00:00:00Z","1969-01-01T00:00:00Z","1970-01-01T00:00:00Z","1971-01-01T00:00:00Z"],[49.9,52.3,49.4,51.1,49.4,47.9,49.8,50.9,49.3,51.9,50.8,49.6,49.3,50.6,48.4,50.7,50.9,50.6,51.5,52.8,51.8,51.1,49.8,50.2,50.4,51.6,51.8,50.9,48.8,51.7,51,50.6,51.7,51.5,52.1,51.3,51,54,51.4,52.7,53.1,54.6,52,52,50.9,52.6,50.2,52.6,51.6,51.9,50.5,50.9,51.7,51.4,51.7,50.8,51.9,51.8,51.9,53]]},"evals":["attrs.interactionModel"]}</script></p>
 <pre class="r"><code>library(&quot;rCharts&quot;)
 hair_eye_male &lt;- subset(as.data.frame(HairEyeColor), Sex == &quot;Male&quot;)
 a &lt;- nPlot(Freq ~ Hair, group = 'Eye', data = hair_eye_male, type = 'multiBarChart')
@@ -142,21 +142,21 @@ a$show(&quot;iframesrc&quot;, cdn = TRUE)</code></pre>
   &lt;/head&gt;
   &lt;body &gt;
     
-    &lt;div id = 'chartcf71e0d638f' class = 'rChart nvd3'&gt;&lt;/div&gt;    
+    &lt;div id = 'chartd8257a696fc' class = 'rChart nvd3'&gt;&lt;/div&gt;    
     &lt;script type='text/javascript'&gt;
  $(document).ready(function(){
-      drawchartcf71e0d638f()
+      drawchartd8257a696fc()
     });
-    function drawchartcf71e0d638f(){  
+    function drawchartd8257a696fc(){  
       var opts = {
- &quot;dom&quot;: &quot;chartcf71e0d638f&quot;,
+ &quot;dom&quot;: &quot;chartd8257a696fc&quot;,
 &quot;width&quot;:    800,
 &quot;height&quot;:    400,
 &quot;x&quot;: &quot;Hair&quot;,
 &quot;y&quot;: &quot;Freq&quot;,
 &quot;group&quot;: &quot;Eye&quot;,
 &quot;type&quot;: &quot;multiBarChart&quot;,
-&quot;id&quot;: &quot;chartcf71e0d638f&quot; 
+&quot;id&quot;: &quot;chartd8257a696fc&quot; 
 },
         data = [
  {
@@ -307,7 +307,7 @@ a$show(&quot;iframesrc&quot;, cdn = TRUE)</code></pre>
     
     &lt;script&gt;&lt;/script&gt;    
   &lt;/body&gt;
-&lt;/html&gt; " scrolling="no" frameBorder="0" seamless class="rChart  nvd3  " id="iframe-chartcf71e0d638f">
+&lt;/html&gt; " scrolling="no" frameBorder="0" seamless class="rChart  nvd3  " id="iframe-chartd8257a696fc">
 </iframe>
 <style>iframe.rChart{ width: 100%; height: 400px;}</style>
 <p>Если <code>hmtl</code>-виджет очень понравился, то его можно и в статический документ экспортировать.</p>
