@@ -1,0 +1,89 @@
+---
+title: "[Заметки по R](http://bdemeshev.github.io/r_cycle/): R внутри документов"
+date: "`r format(Sys.time(), '%d.%m.%Y')`"
+output: html_document
+lang: russian
+---
+
+
+```{r echo = FALSE}
+library("knitr")
+hook_source_def = knit_hooks$get('source')
+knit_hooks$set(source = function(x, options){
+  if (!is.null(options$verbatim) && options$verbatim){
+    opts = gsub(",\\s*verbatim\\s*=\\s*TRUE\\s*", "", options$params.src)
+    bef = sprintf('\n\n    ```{r %s}\n', opts, "\n")
+    stringr::str_c(bef, paste(knitr:::indent_block(x, "    "), collapse = '\n'), "\n    ```\n")
+  } else {
+     hook_source_def(x, options)
+  }
+})
+```
+
+С помощью R удобно создавать и документы предназначенные для чтения человеком. Теоретически, любой язык разметки документов можно комбинировать с командами R. Мы остановимся на двух наиболее актуальных для написания статей и презентаций: латехе и маркдауне. 
+
+Маркдаун --- очень простой язык разметки, и поэтому он легко автоматически конвертируется в более сложные форматы: `html`, `tex`, `docx` и другие.
+
+
+## Цепочка Rmd-md-html
+
+Табличка с данными:
+
+
+Табличка со сравнением нескольких моделей:
+
+
+График:
+
+Для динамических интерактивных документов формат `html` *гораздо* лучше, чем `docx` или `pdf`. Помимо статичных графиков и таблиц здесь уйма возможностей!!! Их можно и нужно использовать в презентациях!
+
+здесь htmlwidgets
+
+## Цепочка Rmd-md-tex-pdf
+
+Табличка с данными:
+
+
+Табличка со сравнением нескольких моделей:
+
+
+График:
+
+## Цепочка Rmd-md-docx
+
+Табличка с данными:
+
+
+Табличка со сравнением нескольких моделей:
+
+
+График:
+
+## Цепочка Rnw-tex-pdf
+
+Создаём минимальный `Rnw`-документ. 
+
+Табличка с данными:
+
+
+Табличка со сравнением нескольких моделей:
+
+
+График:
+
+
+Проблема русских букв на графике:
+
+
+
+
+
+Почиташки:
+
+* [Шпаргалка по R-markdown](https://www.rstudio.com/resources/cheatsheets/) от R-studio
+* Yihui, [knitr](http://yihui.name/knitr/)
+* Подборка [htmlwidgets](http://www.htmlwidgets.org/)
+* Hafen, [htmlwidgets-gallery](http://hafen.github.io/htmlwidgetsgallery/)
+* [Rcharts gallery](http://rcharts.io/gallery/)
+
+
