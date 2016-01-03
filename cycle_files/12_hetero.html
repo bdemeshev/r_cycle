@@ -161,7 +161,7 @@ summary(m1)</code></pre>
 <p>Есть разные способы состоятельно оценить отдельные дисперсии <span class="math">\(\hat{\sigma}^2_i\)</span>, подробно можно почитать в описании пакета <a href="http://cran.r-project.org/web/packages/sandwich/vignettes/sandwich.pdf"><code>sandwich</code></a>. Наиболее популярный на сегодня — это так называемый “HC3”: <span class="math">\[
 \hat{\sigma}^2_i=\frac{\hat{\epsilon}_i^2}{(1-h_{ii})^2}
 \]</span></p>
-<p>Здесь <span class="math">\(h_{ii}\)</span> — диагональный элемент матрицы-шляпницы (hat matrix), <span class="math">\(\hat{y}=Hy\)</span>, <span class="math">\(H=X(X'X)^{-1}X'\)</span>). Матрицу-шляпницу также называют проектором, т.к. она проецирует вектор <span class="math">\(y\)</span> на линейную оболочку регрессоров.</p>
+<p>Здесь <span class="math">\(h_{ii}\)</span> — диагональный элемент матрицы-шляпницы (hat matrix), <span class="math">\(\hat{y}=Hy\)</span>, <span class="math">\(H=X(X'X)^{-1}X'\)</span>. Матрицу-шляпницу также называют проектором, т.к. она проецирует вектор <span class="math">\(y\)</span> на линейную оболочку регрессоров.</p>
 <p>Посмотрим на матрицу <span class="math">\(\widehat{Var}_{HC}(\hat{\beta}|X)\)</span> в R.</p>
 <pre class="r"><code>vcovHC(m1)</code></pre>
 <pre><code>##             (Intercept)       totsp
