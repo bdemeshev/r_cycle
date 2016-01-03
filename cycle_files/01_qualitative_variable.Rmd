@@ -5,13 +5,27 @@ output: html_document
 lang: russian
 ---
 
+Загружаем нужные пакеты:
+
+```{r, warning = FALSE, message = FALSE}
+library("ggplot2") # графики
+
+# пакеты для графиков качественных переменных:
+
+library("vcd")
+library("alluvial")
+# ставится с github командой devtools::install_github("mbojan/alluvial")
+
+```
+
+
 Создаем текстовую переменную из 100 случайно выбранных слов "yes", "no", "maybe". Затем посмотрим её описание.
 ```{r}
 x <- sample(size = 100, c("yes","no","maybe"), rep = TRUE)
 str(x) 
 ```
 
-Переведём нашу переменную из символьной в факторную:
+Переведём нашу переменную из символьной в факторную.
 ```{r}
 x.factor <- factor(x)
 str(x.factor)
@@ -21,45 +35,37 @@ str(x.factor)
 ### Графики
 
 Можно построить гистограмму. Штатными средствами R:
-```{r, warning=FALSE}
-plot(x.factor,main="Любите ли вы сыр?",xlab="Ответ мышки",ylab="Количество мышек")
+```{r}
+plot(x.factor, main = "Любите ли вы сыр?", xlab = "Ответ мышки",
+     ylab = "Количество мышек")
 ```
 
 Та же гистограмма с помощью пакета `ggplot2`. Пакет `ggplot2` работает с таблицами данных (data frame), поэтому предварительно создадим таблицу `h` со столбцом `x.factor`.
-```{r, warning=FALSE}
-library("ggplot2")
+```{r}
 h <- data.frame(x.factor)
-qplot(x.factor, data = h) + 
-  labs(x = "Ответ мышки", y = "Количество мышек",
-       title = "Любите ли вы сыр?")
+str(h)
+ggplot(h) + geom_bar(aes(x.factor)) + labs(x = "Ответ мышки", 
+     y = "Количество мышек", title = "Любите ли вы сыр?")
+
 ```
 
 Есть пакет `vcd` с кучей графиков для нескольких качественных переменных. Например, мозаичный график:
 ```{r}
-library("vcd")
-g <- Titanic
-mosaic(~Class+Sex+Survived, data = g, shade = TRUE)
+tit <- Titanic
+mosaic(~ Class + Sex + Survived, data = tit, shade = TRUE)
 ```
-
 
 
 ### добавить parallel coordinates
 
 ### добавить circular plot
 
-
-Устанавливаем пакет `alluvial`
-```{r, eval=FALSE}
-devtools::install_github("mbojan/alluvial")
-```
-
-Загружаем `alluvial`
+Пакет `alluvial` позволяет строить графики одноимённого типа:
 ```{r}
-library("alluvial")
 tit <- as.data.frame(Titanic)
-alluvial(tit[,1:4], freq=tit$Freq, border = NA,
+alluvial(tit[,1:4], freq = tit$Freq, border = NA,
          hide = tit$Freq < quantile(tit$Freq, .50),
-         col = ifelse(tit$Survived == "No", "red", "gray") )
+         col = ifelse(tit$Survived == "No", "red", "gray"))
 ```
 
 
@@ -69,18 +75,18 @@ alluvial(tit[,1:4], freq=tit$Freq, border = NA,
 Теперь можно строить регрессии и R автоматом будет вводить дамми в нужном количестве. 
 ```{r}
 y <- rnorm(100)
-model1 <- lm(y~x.factor)
-summary(model1)
+x.model1 <- lm(y ~ x.factor)
+summary(x.model1)
 ```
 
 Мы легко можем указать категорию `no` в качестве базовой:
 ```{r}
-x.factor <- relevel(x.factor,ref="no")
-model2 <- lm(y~x.factor)
-summary(model2)
+x.factor <- relevel(x.factor, ref = "no")
+x.model2 <- lm(y ~ x.factor)
+summary(x.model2)
 ```
 
-Для некоторых целей можно перевести факторную переменную в числовую
+Для некоторых целей можно перевести факторную переменную в числовую:
 ```{r}
 x.num <- as.numeric(x.factor)
 str(x.num)
