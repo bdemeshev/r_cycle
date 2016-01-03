@@ -261,7 +261,7 @@ glimpse(orange_plus)</code></pre>
 <ul>
 <li><code>.fitted</code> — предсказанные <span class="math">\(\hat y_i\)</span></li>
 <li><code>.resid</code> — остатки <span class="math">\(\hat\varepsilon_i\)</span></li>
-<li><code>.std.resid</code> — стандартизованные остатки, <span class="math">\(s_i = \frac{\varepsilon_i}{\sqrt{\hat{\sigma}^2(1-h_{ii})}}\)</span> … дописать</li>
+<li><code>.std.resid</code> — стандартизованные остатки, <span class="math">\(s_i = \frac{\hat\varepsilon_i}{\sqrt{\hat{\sigma}^2(1-h_{ii})}}\)</span> … дописать</li>
 </ul>
 <p>Более подробную о коэффициентах:</p>
 <pre class="r"><code>tidy(model)</code></pre>
