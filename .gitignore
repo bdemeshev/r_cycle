@@ -1,3 +1,11 @@
 .Rproj.user
 .Rhistory
 .RData
+
+cycle_files/temp_files/
+
+cycle_files/temp.html
+
+cycle_files/temp.pdf
+
+cycle_files/temp.png
