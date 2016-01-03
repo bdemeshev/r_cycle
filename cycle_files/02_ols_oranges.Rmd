@@ -7,12 +7,13 @@ lang: russian
 
 Подгрузим необходимые пакеты:
 
-```{r, message=FALSE}
-library("ggplot2") # кузявые графики
+```{r, warning=FALSE, message=FALSE}
+library("ggplot2") # графики
 library("lmtest") # тесты для линейных моделей
 library("dplyr") # манипуляции с данными
-library("memisc")
-library("pander")
+library("memisc") # сравнение моделей
+library("pander") # таблички в markdown
+library("broom") # стандартизация информации о модели и описательные статистики
 ```
 
 ## Простая работа с данными до оценки регрессий
@@ -24,9 +25,14 @@ library("pander")
 
 Мы воспользуемся набором данных `Orange` про апельсиновые деревья.
 
-Общая информация:
+Совсем кратко о наборе данных:
 ```{r}
-summary(Orange) # описательные статистики
+glance(Orange)
+```
+
+Описательные статистики:
+```{r}
+tidy(Orange) 
 ```
 
 Как выглядит начало таблички?
@@ -46,14 +52,18 @@ str(Orange)
 
 Графики
 ```{r}
-qplot(x=age, y=circumference, data=Orange, color=Tree)
+str(Orange)
+ggplot(Orange) + geom_point(aes(x = age, y = circumference, color = Tree)) + 
+  labs(x = "Возраст дерева", y = "Диаметр поперечного сечения ствола",
+  title = "Диаметр сечения апельсинового дерева") +
+  scale_colour_discrete(name = "Дерево п/п")
 ```
 
 
 Оценим обыкновенную парную регрессию для того, чтобы понять, как диаметр дерева зависит от его возраста: 
 
 ```{r}
-model <- lm(circumference~age, data=Orange) # оцениваем модель
+model <- lm(circumference ~ age, data = Orange) # оцениваем модель
 report <- summary(model) # создаём отчет по модели
 report # выводим отчет на экран
 ```
@@ -82,7 +92,7 @@ coef(model)
 
 Доверительные интервалы для коэффициентов:
 ```{r}
-confint(model, level=0.90)
+confint(model, level = 0.90)
 ```
 
 Отдельно табличка с результатами тестов:
@@ -92,7 +102,8 @@ coeftest(model)
 
 Несколько моделей можно сравнить рядом в одной табличке:
 ```{r}
-model_2 <- lm(data = Orange, circumference~age + I(age^2))
+model_2 <- lm(data = Orange, 
+              circumference ~ age + I(age^2))
 mtable(model, model_2)
 ```
 
@@ -100,23 +111,61 @@ mtable(model, model_2)
 
 Построим точечный прогноз диаметра дерева:
 ```{r}
-new.data <- data_frame(age=c(100,200,300))
+new.data <- data_frame(age = c(100, 200, 300))
 predict(model, new.data)
 ```
 
 Прогноз с доверительным интервалом для среднего диаметра дерева:
 ```{r}
-predict(model, new.data, interval="confidence")
+predict(model, new.data, interval = "confidence")
 ```
 
 
 И прогноз с предиктивным интервалом для конкретного наблюдения:
 ```{r}
-predict(model, new.data, interval="prediction")
+predict(model, new.data, interval = "prediction")
 ```
+
+Есть удобный пакет `broom`. Основная его философия проста --- всю инфу о модели можно выдавать в data.frame. Пакет `broom` делит информацию на три уровня: 
+
+* краткая о модели в целом 
+* информация о коэффициентах
+* то, что можно добавить к исходным данным после оценки модели. 
+
+О модели в целом:
+```{r}
+glance(model)
+```
+
+
+Более подробную о коэффициентах:
+```{r}
+tidy(model)
+```
+
+Довесим исходные данные предсказанными значениями, остатками и прочим
+```{r}
+orange_plus <- augment(model, Orange)
+glimpse(orange_plus)
+```
+
+К исходным данным добавлены:
+
+* `.fitted` --- предсказанные $\hat y_i$
+* `.resid` --- остатки $\hat\varepsilon_i$
+* `.std.resid` --- стандартизованные остатки, $s_i = \frac{\varepsilon_i}{\sqrt{\hat{\sigma}^2(1-h_{ii})}}$
+...
+дописать
+
+
+
 
 
 Что еще можно вытащить из оцененной модели, можно узнать несколькими способами. Например, стоит почитать `help(summary.lm)`. Можно еще набрать в консоли `model$` и пару раз кликнуть `<Tab>`. Еще имеет смысл попробовать нажать `<Tab>` после `summ$`. Можно набрать `str(model)`. Да еще гугл есть.
 
 А вообще бывает полезно изобрести велосипед. Пусть где-то в R уже есть функция, считающая доверительный интервал для прогноза. Если вместо этого написать эту функцию своими руками, то можно получить плюс один к экспириенсу и перейти на следующий уровень.
 
+
+Почиташки:
+
+* Виньетка [к пакету `broom`](https://github.com/dgrtwo/broom)

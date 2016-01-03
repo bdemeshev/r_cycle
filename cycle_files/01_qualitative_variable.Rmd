@@ -7,7 +7,7 @@ lang: russian
 
 Загружаем нужные пакеты:
 
-```{r, warning = FALSE, message = FALSE}
+```{r, warning=FALSE, message=FALSE}
 library("ggplot2") # графики
 
 # пакеты для графиков качественных переменных:
