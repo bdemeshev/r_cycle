@@ -27,6 +27,15 @@ knit_hooks$set(source = function(x, options){
 
 ## Цепочка Rmd-md-html
 
+```{r}
+library("htmlwidgets")
+library("DiagrammeR") 
+library("webshot") # сохранение виджетов в формате png или pdf
+```
+
+
+Минимальный документ:
+
 Табличка с данными:
 
 
@@ -37,19 +46,30 @@ knit_hooks$set(source = function(x, options){
 
 Для динамических интерактивных документов формат `html` *гораздо* лучше, чем `docx` или `pdf`. Помимо статичных графиков и таблиц здесь уйма возможностей!!! Их можно и нужно использовать в презентациях!
 
-здесь htmlwidgets
+здесь примеры htmlwidgets
 
-## Цепочка Rmd-md-tex-pdf
+Если `hmtl`-виджет очень понравился, то его можно и в статический документ экспортировать. Виджет, чтобы экспортировать виджеты интерактивно, называется [exportwidget](https://github.com/timelyportfolio/exportwidget). 
 
-Табличка с данными:
+Автоматическое сохранение виджетов в png/pdf также возможно, например, с помощью пакета `webshot`.  Для использования `webshot` потребуется установить [`phantomjs`](http://phantomjs.org/) и добавить путь в переменную `PATH`. На маке есть маленький баг в `phantomjs` и есть [исправление для него](https://github.com/eugene1g/phantomjs/releases). Проверить, что R видит `phantomjs` можно командой `Sys.which("phantomjs")`. В ответ R должен выдать путь к установленному исполняемому файлу `phantomjs`.
 
+```{r}
+m <- grViz(" digraph { a->b; b->c; c->a; }")
+saveWidget(m, 'temp.html', selfcontained = FALSE)
+webshot('temp.html', file="temp.png", cliprect = 'viewport')
+```
 
-Табличка со сравнением нескольких моделей:
+И покажем сохранённую картинку:
+![simple diagram][simple_diagram]
 
+Для презентаций уже есть заранее заготовленные красивые разбивки на слайды. 
+тут про презентации
 
-График:
 
 ## Цепочка Rmd-md-docx
+
+Авторы данного документа категорически против использования MS Word для написания статей, домашних работ, презентаций и чего бы то ни было. Но если гопники окружили в тёмном переулке и спрашивают: "Ворд есть?", то:
+
+Минимальный документ:
 
 Табличка с данными:
 
@@ -60,6 +80,8 @@ knit_hooks$set(source = function(x, options){
 График:
 
 ## Цепочка Rnw-tex-pdf
+
+Минимальный документ:
 
 Создаём минимальный `Rnw`-документ. 
 
@@ -75,11 +97,32 @@ knit_hooks$set(source = function(x, options){
 Проблема русских букв на графике:
 
 
+## Цепочка Rmd-md-tex-pdf
+
+Минимальный документ:
+
+Цепочка Rmd-md-tex-pdf длиннее, чем Rnw-tex-pdf. Минус в том, что выше риск столкнуться с проблемой при преобразованиях на пути к финальному `pdf`.  Плюс в большей универсальности: захотел вместо `pdf` сделать `html` и через несколько секунд всё готово, а сделать `html` из `Rnw` нетривиальная задача.
+
+Табличка с данными:
 
 
+Табличка со сравнением нескольких моделей:
+
+
+График:
+
+Подгрузка пакетов и прочее в начале документа:
+
+* отдельные строки
+* целый файл
+
+#### Список литературы
+
+изложить по [bib+cite](http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html)
 
 Почиташки:
 
+* [R-markdown](http://rmarkdown.rstudio.com/)
 * [Шпаргалка по R-markdown](https://www.rstudio.com/resources/cheatsheets/) от R-studio
 * Yihui, [knitr](http://yihui.name/knitr/)
 * Подборка [htmlwidgets](http://www.htmlwidgets.org/)
@@ -87,3 +130,4 @@ knit_hooks$set(source = function(x, options){
 * [Rcharts gallery](http://rcharts.io/gallery/)
 
 
+[simple_diagram]: temp.png
