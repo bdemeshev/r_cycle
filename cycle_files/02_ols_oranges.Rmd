@@ -7,8 +7,8 @@ lang: russian
 
 Подгрузим необходимые пакеты:
 
-```{r, message=FALSE}
-library("ggplot2") # кузявые графики
+```{r, warning=FALSE, message=FALSE}
+library("ggplot2") # графики
 library("lmtest") # тесты для линейных моделей
 library("dplyr") # манипуляции с данными
 library("memisc") # сравнение моделей
@@ -52,15 +52,19 @@ str(Orange)
 
 Графики
 ```{r}
-qplot(data = Orange, x = age, 
-      y = circumference, color = Tree)
+ggplot(Orange) + 
+  geom_point(aes(x = age, y = circumference, color = Tree)) + 
+  labs(x = "Возраст дерева", 
+       y = "Диаметр поперечного сечения ствола",
+  title = "Диаметр сечения апельсинового дерева") +
+  scale_colour_discrete(name = "Дерево п/п")
 ```
 
 
 Оценим обыкновенную парную регрессию для того, чтобы понять, как диаметр дерева зависит от его возраста: 
 
 ```{r}
-model <- lm(circumference~age, data = Orange) # оцениваем модель
+model <- lm(circumference ~ age, data = Orange) # оцениваем модель
 report <- summary(model) # создаём отчет по модели
 report # выводим отчет на экран
 ```
@@ -100,7 +104,7 @@ coeftest(model)
 Несколько моделей можно сравнить рядом в одной табличке:
 ```{r}
 model_2 <- lm(data = Orange, 
-              circumference~age + I(age^2))
+              circumference ~ age + I(age^2))
 mtable(model, model_2)
 ```
 
@@ -108,7 +112,7 @@ mtable(model, model_2)
 
 Построим точечный прогноз диаметра дерева:
 ```{r}
-new.data <- data_frame( age= c(100, 200, 300))
+new.data <- data_frame(age = c(100, 200, 300))
 predict(model, new.data)
 ```
 
@@ -133,6 +137,29 @@ predict(model, new.data, interval = "prediction")
 ```{r}
 glance(model)
 ```
+
+
+Более подробную о коэффициентах:
+```{r}
+tidy(model)
+```
+
+Довесим исходные данные предсказанными значениями, остатками и прочим
+```{r}
+orange_plus <- augment(model, Orange)
+glimpse(orange_plus)
+```
+
+К исходным данным добавлены:
+
+* `.fitted` --- предсказанные $\hat y_i$
+* `.resid` --- остатки $\hat\varepsilon_i$
+* `.std.resid` --- стандартизованные остатки, $s_i = \frac{\hat\varepsilon_i}{\sqrt{\hat{\sigma}^2(1-h_{ii})}}$
+...
+дописать
+
+
+
 
 
 Более подробную о коэффициентах:
