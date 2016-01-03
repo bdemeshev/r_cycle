@@ -30,6 +30,7 @@ lang: russian
 * [23. Загрузка данных по России](cycle_files/23_load_rus_data.html)
 * 24. Работа с данными rlms (план)
 * 25. Графики --- дело тонкое!
+* [26. R внутри документов](cycle_files/26_literate_programming.html)
 
 
 
