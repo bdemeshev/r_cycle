@@ -6,8 +6,15 @@ lang: russian
 ---
 
 
-```{r echo = FALSE}
+
+```{r}
 library("knitr")
+library("dplyr")
+```
+
+
+```{r echo = FALSE}
+
 hook_source_def = knit_hooks$get('source')
 knit_hooks$set(source = function(x, options){
   if (!is.null(options$verbatim) && options$verbatim){
@@ -46,16 +53,37 @@ library("webshot") # сохранение виджетов в формате png
 
 Для динамических интерактивных документов формат `html` *гораздо* лучше, чем `docx` или `pdf`. Помимо статичных графиков и таблиц здесь уйма возможностей!!! Их можно и нужно использовать в презентациях!
 
-здесь примеры htmlwidgets
+Интерактивная карта:
+```{r}
+library("leaflet")
+map <- leaflet() %>%
+  addTiles() %>%  # Add default OpenStreetMap map tiles
+  addMarkers(lng = 37.6087, lat = 55.72069, 
+             popup = "Особняк Симоно")
+map
+```
 
-Если `hmtl`-виджет очень понравился, то его можно и в статический документ экспортировать. Виджет, чтобы экспортировать виджеты интерактивно, называется [exportwidget](https://github.com/timelyportfolio/exportwidget). 
+Временной ряд с масштабированием:
+```{r}
+library("dygraphs")
+dygraph(nhtemp, main = "New Haven Temperatures") %>% 
+  dyRangeSelector(dateWindow = c("1920-01-01", "1960-01-01"))
+```
+
+
+Если `hmtl`-виджет очень понравился, то его можно и в статический документ экспортировать. 
+
+![We need to go deeper](http://i2.kym-cdn.com/photos/images/original/000/531/557/a88.jpg)
+
+Виджет, чтобы экспортировать виджеты, называется [exportwidget](https://github.com/timelyportfolio/exportwidget). 
+
 
 Автоматическое сохранение виджетов в png/pdf также возможно, например, с помощью пакета `webshot`.  Для использования `webshot` потребуется установить [`phantomjs`](http://phantomjs.org/) и добавить путь в переменную `PATH`. На маке есть маленький баг в `phantomjs` и есть [исправление для него](https://github.com/eugene1g/phantomjs/releases). Проверить, что R видит `phantomjs` можно командой `Sys.which("phantomjs")`. В ответ R должен выдать путь к установленному исполняемому файлу `phantomjs`.
 
 ```{r}
 m <- grViz(" digraph { a->b; b->c; c->a; }")
-saveWidget(m, 'temp.html', selfcontained = FALSE)
-webshot('temp.html', file="temp.png", cliprect = 'viewport')
+saveWidget(m, "temp.html", selfcontained = FALSE)
+webshot("temp.html", file = "temp.png", cliprect = "viewport")
 ```
 
 И покажем сохранённую картинку:
