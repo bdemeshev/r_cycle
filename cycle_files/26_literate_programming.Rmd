@@ -73,7 +73,7 @@ dygraph(nhtemp, main = "New Haven Temperatures") %>%
 Гистограмма с переключением:
 ```{r, results = 'asis'}
 library("rCharts")
-hair_eye_male <- subset(as.data.frame(HairEyeColor), Sex == "Male")
+hair_eye_male <- filter(as.data.frame(HairEyeColor), Sex == "Male")
 a <- nPlot(Freq ~ Hair, group = 'Eye', data = hair_eye_male, type = 'multiBarChart')
 a$show("iframesrc", cdn = TRUE)
 ```
