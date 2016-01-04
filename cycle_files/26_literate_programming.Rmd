@@ -34,14 +34,35 @@ knit_hooks$set(source = function(x, options){
 
 ## Цепочка Rmd-md-html
 
+Начнём с создания `Rmd` документа, который будет автоматически преобразовываться в `html`.
+
+Минимальный пример, [`26_small_rmd_demo.Rmd`](cycle_files/26_small_rmd_demo.Rmd):
+
+```{r, echo = FALSE}
+a <- readLines("26_small_rmd_demo.Rmd", warn = FALSE)
+res <- paste0(paste0("    ", a), collapse = "\n")
+```
+
+`r res`
+
+При компиляции этого `Rmd`-документа (кнопочка `Knit HTML` в Rstudio)  блок кода
+
+...
+
+будет исполнен и получится результат.
+
+Естественно, внутри блока кода можно делать и более сложные вещи, например, подгрузить несколько пакетов и построить график:
+
+
+
 ```{r}
-library("htmlwidgets")
-library("DiagrammeR") 
+library("htmlwidgets") # работа с виджетами 
+library("DiagrammeR") # рисование диаграмм
 library("webshot") # сохранение виджетов в формате png или pdf
 ```
 
 
-Минимальный документ:
+
 
 Табличка с данными:
 
