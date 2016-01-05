@@ -48,12 +48,11 @@ theme_set(theme_bw()) # чёрно-белая тема оформления гр
 
 ```{r, "read table"}
 filename <- "../datasets/flats_moscow.txt"
-h <- read.table(filename, header=TRUE)
+flats <- read.table(filename, header = TRUE)
 
 
-ggplot(h) + geom_point(aes(x = totsp, y = price)) + 
-  labs(x = "Общая площадь квартиры, кв.м", 
-       y = "Цена квартиры, $1000", 
+ggplot(flats) + geom_point(aes(x = totsp, y = price)) + 
+  labs(x = "Общая площадь квартиры, кв.м", y = "Цена квартиры, $1000", 
   title = "Стоимость квартир в Москве")
 
 ```
@@ -61,7 +60,7 @@ ggplot(h) + geom_point(aes(x = totsp, y = price)) +
 
 Строим регрессию стоимости на общую площадь.
 ```{r}
-m1 <- lm(price ~ totsp, data = h)
+m1 <- lm(price ~ totsp, data = flats)
 summary(m1)
 ```
 
@@ -139,7 +138,7 @@ W = (A\beta - b)'(A\cdot \widehat{Var}_{HC}(\hat\beta)A')^{-1}(A\beta - b)
 
 В R реализуется с помощью опции для команды `waldtest`. Покажем на примере гипотезы о незначимости регрессии в целом:
 ```{r}
-m0 <- lm(price ~ 1, data = h) # оцениваем ограниченную модель (регрессия на константу)
+m0 <- lm(price ~ 1, data = flats) # оцениваем ограниченную модель (регрессия на константу)
 waldtest(m0, m1, vcov = vcovHC(m1))
 ```
 
@@ -148,8 +147,8 @@ waldtest(m0, m1, vcov = vcovHC(m1))
 
 В R вектор весов `weights` должен быть обратно пропорционален дисперсиям, т.е. $w_i=1/\sigma^2_i$.
 ```{r}
-model <- lm(price ~ totsp, weights = I(1 / totsp), data = h)
-summary(model)
+m2 <- lm(price ~ totsp, weights = I(1 / totsp), data =flats)
+summary(m2)
 ```
 
 
@@ -168,10 +167,9 @@ s_i = \frac{\varepsilon_i}{\sqrt{\hat{\sigma}^2(1-h_{ii})}}
 В R:
 ```{r}
 m1.st.resid <- rstandard(m1) # получаем стандартизированные остатки
-ggplot(aes(x = totsp, y = abs(m1.st.resid)), data = h) + geom_point(alpha = 0.2) + 
-  xlab("Общая площадь квартиры, кв.м") +
-  ylab(expression(paste("Стандартизированные остатки, ", s[i]))) +
-  ggtitle("Графическое обнаружение гетероскедастичности")
+ggplot(aes(x = totsp, y = abs(m1.st.resid)), data =flats) + geom_point(alpha = 0.2) + 
+  labs(x = "Общая площадь квартиры, кв.м", y = expression(paste("Стандартизированные остатки, ", s[i])),
+  title = "Графическое обнаружение гетероскедастичности")
 ```
 
 Иногда для простоты пропускают второй шаг со стандартизацией остатков и в результате могут ошибочно принять принять разную $Var(\hat{\varepsilon}_i)$ за гетероскедастичность, т.е. за разную $Var(\varepsilon_i)$. Впрочем, если гетероскедастичность сильная, то её будет видно и на нестандартизированных остатках.
@@ -238,7 +236,7 @@ bptest(m1, studentize = FALSE) # классика Бройша-Пагана
 
 Тест Уайта в R: 
 ```{r}
-bptest(m1, varformula = ~totsp + I(totsp^2), data = h)
+bptest(m1, varformula = ~ totsp + I(totsp^2), data = flats)
 ```
 
 
@@ -269,9 +267,9 @@ bptest(m1, varformula = ~totsp + I(totsp^2), data = h)
 
 Тест Голдфельда-Квандта в R:
 ```{r}
-h2 <- h[order(h$totsp), ] # сменим порядок строк в табличке h
-m2 <- lm(price ~ totsp, data = h2) 
-gqtest(m2, fraction = 0.2) # проведем GQ тест выкинув посередине 20% наблюдений
+flats2 <- flats[order(flats$totsp), ] # сменим порядок строк в табличке h
+m3 <- lm(price ~ totsp, data = flats2) 
+gqtest(m3, fraction = 0.2) # проведем GQ тест выкинув посередине 20% наблюдений
 ```
 
 
