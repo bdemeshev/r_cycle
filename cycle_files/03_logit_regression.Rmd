@@ -17,12 +17,12 @@ library("texreg") # обработка результатов регрессии
 
 Загружаем [данные](https://github.com/bdemeshev/em301/raw/master/datasets/mesto_jenshini.dta) в R:
 ```{r}
-place <- read.dta("C:/Users/Polina/em301/datasets/mesto_jenshini.dta")
+role <- read.dta("../datasets/mesto_jenshini.dta")
 ```
 
 Это данные американского социологического опроса National Longitudinal Survey of Youth. Основная переменная, `agree`, показывает согласна ли опрашиваемая женщина с утверждением "Место женщины у плиты!" Мы оценим logit и probit модели для переменной `agree`.
 
-![](03_plita.gif)
+![Tsvetkov, Mesto jenshini](03_plita.gif)
 
 Андрей Цветков, ["Место женщины"](http://ccra.ru/Plk)
 
@@ -30,18 +30,18 @@ place <- read.dta("C:/Users/Polina/em301/datasets/mesto_jenshini.dta")
 
 Проверяем, что всё корректно загрузилось --- `.dta` это не родной для R формат. 
 ```{r}
-head(place)
-summary(place)
+head(role)
+summary(role)
 ```
 
 Let's look on some specific variables. Income. Probably year income divided by family size.
 ```{r}
-summary(place$adjinc)
+summary(role$adjinc)
 ```
 
 Несколько графиков до построения моделей:
 ```{r}
-ggplot(place) + geom_bar(aes(factor(agree))) + scale_x_discrete(breaks = c("1", "0"), 
+ggplot(role) + geom_bar(aes(factor(agree))) + scale_x_discrete(breaks = c("1", "0"), 
   labels = c("Да", "Нет")) + labs(x = "Согласны ли с утверждением?", y = "Количество женщин", 
   title = "Результаты опроса")
 ```
@@ -51,13 +51,13 @@ ggplot(place) + geom_bar(aes(factor(agree))) + scale_x_discrete(breaks = c("1", 
 Логит, пробит и мнк. Предпосылки применения мнк нарушены, но мы его всё равно применим и посмотрим, что выйдет.
 ```{r}
 m.logit <- glm(agree ~ age + adjinc + nsibs,
-          data = place,
+          data = role,
           family = binomial(link = "logit"))
 m.probit <- glm(agree ~ age + adjinc + nsibs,
-          data = place,
+          data = role,
           family = binomial(link = "probit"))
 m.ols <- glm(agree ~ age + adjinc + nsibs,
-          data = place)
+          data = role)
 ```
 
 Посмотрим на логит модель:
@@ -73,7 +73,7 @@ vcov(m.logit)
 
 Коэффициенты в логит и пробит моделях плохо интерпретируемы, т.к. скрытая переменная, в данной задаче  склонность к ответу "да", измеряется в непонятных единицах. В дополнение к коэффициентам рассчитывают предельные эффекты. Предельные эффекты отвечают на вопрос, как изменится примерно вероятность `y = 1` с ростом регрессора на единицу. Обычно предельные эффекты считаются для среднего значения каждого регрессора:
 ```{r}
-logitmfx(agree ~ age + adjinc + nsibs, data = place)
+logitmfx(agree ~ age + adjinc + nsibs, data = role)
 ```
 
 ### Сообщения об ошибках
@@ -132,7 +132,7 @@ Binary prediction. Best binary prediction?
 Likelihood ratio, LR-test, Тест отношения правдоподобия
 ```{r}
 m2.logit <- glm(agree ~ age + age2 + adjinc + nsibs,
-          data = place,
+          data = role,
           family = binomial(link = "logit"))
 lrtest(m.logit, m2.logit)
 ```
@@ -162,27 +162,5 @@ ROC ручками...
 
 ROC с помощью пакета ROCR
 
-## Презентация результатов в латехе
-
-
-Одна модель:
-```{r, eval=FALSE}
-xtable(m.logit)
-```
-
-Предельные эффекты одной модели:
-```{r, eval=FALSE}
-xtable(maBina(m.logit)$out)
-```
-
-Табличка со сравнением нескольких моделей:
-```{r,eval=FALSE}
-texreg(list(m.logit, m2.logit))
-```
-
-Табличка со сравнением предельных эффектов
-```{r, eval=FALSE}
-
-```
 
 
