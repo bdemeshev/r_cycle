@@ -5,7 +5,7 @@ output: html_document
 lang: russian
 ---
 
-```{r, message=FALSE}
+```{r, message=FALSE, warning=FALSE}
 library("knitr")
 opts_chunk$set(
   # cache=FALSE,
@@ -41,8 +41,8 @@ $$
 
 Задаем решетку, и рассчитываем $\dot{y}_1$ и $\dot{y}_2$ в точках решетки:
 ```{r}
-y1 <- seq(-6, 6, .05)
-y2 <- seq(-6, 6, .05)
+y1 <- seq(-6, 6, 0.05)
+y2 <- seq(-6, 6, 0.05)
 df <- expand.grid(y1 = y1, y2 = y2)
 df <- mutate(df, y1dot = y2, y2dot = y1 + cos(y2))
 ```
@@ -73,13 +73,14 @@ streamplot(rast, isField = TRUE)
 
 Простой график можно руками построить без доп. пакетов. При этом нам нужно самостоятельно уменьшить количество стрелочек.
 ```{r}
-y1 <- seq(-6, 6, .5)
-y2 <- seq(-6, 6, .5)
+y1 <- seq(-6, 6, 0.5)
+y2 <- seq(-6, 6, 0.5)
 df <- expand.grid(y1 = y1, y2 = y2)
 df <- mutate(df, y1dot = y2, y2dot = y1 + cos(y2))
-plot(df$y1, df$y2, pch = ".")
-arrow.plot( df$y1, df$y2, df$y1dot, df$y2dot,
-            arrow.ex=0.03, length=0.05) 
+plot(df$y1, df$y2, pch = ".", xlab = expression(paste(y[1])),
+  ylab = expression(paste(y[2])), main = "График векторного поля")
+arrow.plot(df$y1, df$y2, df$y1dot, df$y2dot,
+            arrow.ex = 0.03, length = 0.05)
 ```
 
 
@@ -114,7 +115,9 @@ t <- seq(0, 10, by = 0.01)
 sol <- ode(y = y.start, times = t, func = eq1)
 sol <- data.frame(sol)
 head(sol)
-qplot(data=sol, time, y1)
+str(sol)
+ggplot(sol) + geom_line(aes(time, y1), size = 2) + labs(x = "t",
+  y = expression(paste(y[1])), title = "Решение ОДУ с начальными условиями")
 ```
 
 Функция `ode` возвращает матрицу, а для рисования графиков удобнее табличка с данными, data.frame. Строчка `sol <- data.frame(sol)` переделывает матрицу в таблицу с данными.
@@ -152,7 +155,8 @@ sol <- bvptwp(yini = y.start, yend = y.final,
            nmax = 2000)
 sol <- data.frame(sol)
 head(sol)
-qplot(data = sol, x, y1)
+ggplot(sol) + geom_line(aes(x, y1), size = 2) +  labs(x = "x", 
+  y = expression(paste(y[1])), title = "Решение ОДУ с краевыми условиями")
 ```
 
 
@@ -167,14 +171,14 @@ qplot(data = sol, x, y1)
 
 Создаем data.frame с декартовым произведением двух векторов
 ```{r}
-df <- expand.grid(x = seq(-2, 2, .01), y = seq(-2, 2, .01))
+df <- expand.grid(x = seq(-2, 2, 0.01), y = seq(-2, 2, 0.01))
 ```
 
 Изобразим функцию $z(x,y)=(3\cdot x^2+y)\cdot e^{-x^2-y^2}$.
 
 Cоздаем переменную z как функцию от x и y 
 ```{r}
-df <- mutate(df, z = (3 * x^2 + y) * exp(-x^2 - y^2))
+df <- mutate(df, z = (3 * x^2 + y) * exp(- x^2 - y^2))
 
 ```
 
