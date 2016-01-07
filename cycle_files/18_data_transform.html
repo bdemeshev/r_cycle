@@ -61,7 +61,7 @@ img {
 
 <div id="header">
 <h1 class="title"><a href="http://bdemeshev.github.io/r_cycle/">Заметки по R</a>: Преобразования данных</h1>
-<h4 class="date"><em>05.12.2015</em></h4>
+<h4 class="date"><em>07.01.2016</em></h4>
 </div>
 
 
@@ -79,15 +79,21 @@ library(&quot;ggplot2&quot;) # графики</code></pre>
 </div>
 <div id="----" class="section level2">
 <h2>Разделяй и властвуй! Затем соединяй!</h2>
-<p>Многие преобразования могут быть описаны с помощью принципа “Разделяй и властвуй! Затем соединяй!”: * Разделяем большую табличку на много маленьких * На каждой маленькой табличке делаем простые вычисления * Соединяем результат в одну большую табличку</p>
+<p>Многие преобразования могут быть описаны с помощью принципа “Разделяй и властвуй! Затем соединяй!”:</p>
+<ul>
+<li><p>разделяем большую табличку на много маленьких;</p></li>
+<li><p>на каждой маленькой табличке делаем простые вычисления;</p></li>
+<li><p>соединяем результат в одну большую табличку.</p></li>
+</ul>
 <p>Загрузим данные по стоимости квартир в Москве:</p>
-<pre class="r"><code>file &lt;- &quot;~/Documents/em301/datasets/flats_moscow.txt&quot;
-h &lt;- read.table(file,header=TRUE)</code></pre>
+<pre class="r"><code>filename &lt;- &quot;../datasets/flats_moscow.txt&quot;
+flats &lt;- read.table(filename, header = TRUE)</code></pre>
 <p>Пример. Подсчёт описательных статистик внутри групп</p>
 <p>Мы разбиваем большую таблицу на маленькие таблички по переменным <code>code</code> (географический район квартиры) и <code>brick</code> (кирпичность). По каждой маленькой табличке считаем число наблюдений и среднюю цену квартиры. Затем сводим в итоговую таблицу:</p>
-<pre class="r"><code>h.summ &lt;-ddply(h,~code+brick,summarize,
-      n=length(price),mean=mean(price))
-head(h.summ)</code></pre>
+<pre class="r"><code>flats.summ &lt;- ddply(flats, ~ code + brick, summarize,
+      n = length(price), mean = mean(price))
+
+head(flats.summ)</code></pre>
 <pre><code>##   code brick   n     mean
 ## 1    1     0 180 123.0000
 ## 2    1     1  92 156.7391
@@ -95,10 +101,12 @@ head(h.summ)</code></pre>
 ## 4    2     1  29 138.3103
 ## 5    3     0 169 134.7337
 ## 6    3     1 176 161.2216</code></pre>
-<p>Пример. Корректировка наблюдения на групповое среднее. Из цены каждой квартиры будет вычтена средняя цена по квартирам данного района и данной кирпичности.</p>
-<pre class="r"><code>h.new &lt;- ddply(h,~code+brick,transform,
-            delta=price-mean(price))
-head(h.new)</code></pre>
+<p>Пример. Корректировка наблюдения на групповое среднее.</p>
+<p>Из цены каждой квартиры будет вычтена средняя цена по квартирам данного района и данной кирпичности.</p>
+<pre class="r"><code>flats.new &lt;- ddply(flats, ~ code + brick, transform,
+            delta = price - mean(price))
+
+head(flats.new)</code></pre>
 <pre><code>##    n price totsp livesp kitsp dist metrdist walk brick floor code delta
 ## 1  4    95    61     37     6 13.5        7    1     0     1    1   -28
 ## 2 24    95    58     38     6 12.0        8    1     0     1    1   -28
@@ -106,7 +114,11 @@ head(h.new)</code></pre>
 ## 4 47   129    79     46    13 12.0       15    1     0     1    1     6
 ## 5 67   135    77     47    10 13.5       10    0     0     1    1    12
 ## 6 68   100    78     44     8 13.5       20    0     0     1    1   -23</code></pre>
-<p>Итого: * опция <code>transform</code> в финальной табличке создаёт столько строк, сколько было в изначальной табличке * опция <code>summarize</code> в финальной табличке создаёт столько строк, на сколько мелких табличек разрезали изначальную</p>
+<p>Итого:</p>
+<ul>
+<li><p>опция <code>transform</code> в финальной табличке создаёт столько строк, сколько было в изначальной табличке;</p></li>
+<li><p>опция <code>summarize</code> в финальной табличке создаёт столько строк, на сколько мелких табличек разрезали изначальную.</p></li>
+</ul>
 <p>Из опыта. Для подсчета числа наблюдений бывает полезна функция <code>nrow()</code>. Функция <code>nrow()</code> работает только без имени переменной и без <code>summarize</code>.</p>
 </div>
 <div id="--" class="section level2">
@@ -120,15 +132,16 @@ head(h.new)</code></pre>
 </div>
 <div id="-----." class="section level3">
 <h3>Таблицы данных бывают “широкие” и “длинные”.</h3>
-<p>Пример “широкой” таблицы</p>
+<p>Пример “широкой” таблицы:</p>
 <pre class="r"><code>tab.wide &lt;- smiths
+
 head(tab.wide)</code></pre>
 <pre><code>##      subject time age weight height
 ## 1 John Smith    1  33     90   1.87
 ## 2 Mary Smith    1  NA     NA   1.54</code></pre>
-<p>Пример “длинной” таблицы</p>
+<p>Пример “длинной” таблицы:</p>
 <pre class="r"><code>names(airquality) &lt;- tolower(names(airquality))
-tab.long &lt;- melt(airquality, id=c(&quot;month&quot;, &quot;day&quot;), na.rm=TRUE)
+tab.long &lt;- melt(airquality, id = c(&quot;month&quot;, &quot;day&quot;), na.rm = TRUE)
 
 head(tab.long)</code></pre>
 <pre><code>##   month day variable value
@@ -139,8 +152,9 @@ head(tab.long)</code></pre>
 ## 5     5   6    ozone    28
 ## 6     5   7    ozone    23</code></pre>
 <p>Данные удобнее обрабатывать в “длинном” формате. В “длинном” формате при получении новых наблюдений не нужно добавлять столбцы в data.frame. “Широкий” формат изредка бывает удобен для представления результатов. Или клиент так хочет.</p>
-<p>Чтобы табличка растаяла из “широкого” формата и стекла вниз в “длинный” её можно растопить командой <code>melt</code> из пакета <code>reshape</code>.</p>
-<pre class="r"><code>tab.long2 &lt;- melt(tab.wide, id=&quot;subject&quot;)
+<p>Чтобы табличка растаяла из “широкого” формата и стекла вниз в “длинный” её можно растопить командой <code>melt</code> из пакета <code>reshape</code>:</p>
+<pre class="r"><code>tab.long2 &lt;- melt(tab.wide, id = &quot;subject&quot;)
+
 head(tab.long2)</code></pre>
 <pre><code>##      subject variable value
 ## 1 John Smith     time     1
@@ -149,8 +163,9 @@ head(tab.long2)</code></pre>
 ## 4 Mary Smith      age    NA
 ## 5 John Smith   weight    90
 ## 6 Mary Smith   weight    NA</code></pre>
-<p>Обратное действие выполняется командой <code>cast</code>.</p>
+<p>Обратное действие выполняется командой <code>cast</code>:</p>
 <pre class="r"><code>tab.wide2 &lt;- cast(tab.long, day + month ~ variable, mean)
+
 head(tab.wide2)</code></pre>
 <pre><code>##   day month ozone solar.r wind temp
 ## 1   1     5    41     190  7.4   67
@@ -167,7 +182,12 @@ head(tab.wide2)</code></pre>
 </div>
 <div id="-" class="section level2">
 <h2>Векторизация функций</h2>
-<p>Если операция, которую нужно выполнить очень сложная, то можно сделать её в три шага: * Написать функцию, которая делает то, что нам нужно, с одним объектом * Векторизовать функцию * Применить функцию к большой табличке</p>
+<p>Если операция, которую нужно выполнить очень сложная, то можно сделать её в три шага:</p>
+<ul>
+<li><p>написать функцию, которая делает то, что нам нужно, с одним объектом;</p></li>
+<li><p>векторизовать функцию;</p></li>
+<li><p>применить функцию к большой табличке.</p></li>
+</ul>
 <p>Этот подход, конечно, можно комбинировать с использованием функции <code>ddply</code>.</p>
 </div>
 
