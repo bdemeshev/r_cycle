@@ -6,8 +6,8 @@ lang: russian
 ---
 
 Загружаем нужные пакеты:
-```{r, message=FALSE}
-library("knitr")
+```{r, message=FALSE, warning=FALSE}
+library("knitr") # создание отчётов
 # opts_chunk$set(cache=TRUE)
 
 library("ggplot2") # графики
@@ -15,39 +15,38 @@ library("glmnet") # LASSO
 library("car") # compute vif()
 library("MASS") # ridge regression
 library("quantreg") # quantile regression
-# install.packages("glmnet") # может быть нужно установить пакеты...
 ```
 
 
 Возьмем встроенные в R данные по скорости автомобилей и длине тормозного пути.
 Это данные 1920-х годов. Скорость в милях в час, миля --- это примерно $1.61$ километра.
-Длина тормозного пути - в футах. Один фут - это примерно 30 сантиметров.
+Длина тормозного пути --- в футах. Один фут --- это примерно $30$ сантиметров.
 ```{r}
-h <- cars
 ggplot(data = cars, aes(x = speed, y = dist)) + geom_point() +
-    xlab("Скорость машины, миль в час") +
-    ylab("Длина тормозного пути, футов") 
+  labs(x = "Скорость машины, миль в час",
+       y = "Длина тормозного пути, футов",
+       title = "Длина тормозного пути")  
 ```
 
 
-Построим полиномиальную регрессию тормозного пути от скорости
+Построим полиномиальную регрессию тормозного пути от скорости:
 ```{r}
-m.poly3 <- lm(dist~speed+I(speed^2)+I(speed^3),data=h)
+m.poly3 <- lm(dist ~ speed + I(speed^2) + I(speed^3), data = cars)
 ```
 
 Предвосхищаем вопрос: Что значит `I(...)`? Буква `I` со скобками заставляет R воспринимать выражение внутри скобок в
 естественном математическом смысле, а не в специальном "регрессионном" смысле.
 Например: 
 
-* `y~x+z` --- регрессия $y$ на $x$ и $z$
-* `y~I(x+z)` --- регрессия $y$ на одну переменную $x+z$
-* `y~(x+z+w)^2` --- регрессия $y$ на $x$, $z$, $w$ и все попарные произведения, т.е. на $xz$, $xw$ и $wz$.
-* `y~I((x+z+w)^2)` --- регрессия на одну переменную $(x+z+w)^2$
-* `y~(x+z+w)^3` --- регрессия $y$ на $x$, $z$, $w$, $xz$, $xw$, $zw$, $xzw$
-* `y~I((x+z+w)^3)` --- регрессия на одну переменную $(x+z+w)^3$
+* `y ~ x + z` --- регрессия $y$ на $x$ и $z$
+* `y ~ I(x + z)` --- регрессия $y$ на одну переменную $x+z$
+* `y ~ (x + z + w)^2` --- регрессия $y$ на $x$, $z$, $w$ и все попарные произведения, т.е. на $xz$, $xw$ и $wz$.
+* `y ~ I((x + z + w)^2)` --- регрессия на одну переменную $(x+z+w)^2$
+* `y ~ (x + z + w)^3` --- регрессия $y$ на $x$, $z$, $w$, $xz$, $xw$, $zw$, $xzw$
+* `y ~ I((x + z + w)^3)` --- регрессия на одну переменную $(x+z+w)^3$
 
 
-Смотрим на отчёт по регрессии
+Смотрим на отчёт по регрессии:
 ```{r}
 summary(m.poly3)
 ```
@@ -55,6 +54,7 @@ summary(m.poly3)
 Мы видим, что:
 
 * ни один коэффициент не значим
+
 * регрессия в целом значима
 
 Это один из признаков мультиколлинеарности.
@@ -63,13 +63,16 @@ summary(m.poly3)
 
 
 Другие признаки мультиколлинеарности:
-* Нестабильность коэффициентов при удалении одного наблюдения
-* Высокие корреляции регрессоров
-* Показатели в духе VIF и CI
+
+* Нестабильность коэффициентов при удалении одного наблюдения;
+
+* Высокие корреляции регрессоров;
+
+* Показатели в духе VIF и CI.
 
 Корреляционная матрица регрессоров:
 ```{r}
-X <- model.matrix(~0+speed+I(speed^2)+I(speed^3),data=h)
+X <- model.matrix(~ 0 + speed + I(speed^2) + I(speed^3), data = cars)
 cor(X)
 ```
 
@@ -83,11 +86,11 @@ CI=\sqrt{\frac{\lambda_{max}}{\lambda_{min}}}
 Вроде бы в некоторых источниках считают собственные числа у корреляционной или ковариационной матрицы регрессоров (???) (Лена Вакуленко) (Некоторые источники не указаны несколько дней. Вы можете улучшить эту статью :)
 
 ```{r}
-X <- model.matrix(~speed+I(speed^2)+I(speed^3),data=h)
+X <- model.matrix( ~ speed + I(speed^2) + I(speed^3), data = cars)
 XX <- t(X) %*% X
 eigen <- eigen(XX)
 eigen$values
-CI <- sqrt(max(eigen$values)/min(eigen$values))
+CI <- sqrt(max(eigen$values) / min(eigen$values))
 CI
 ```
 
@@ -109,9 +112,9 @@ vif(m.poly3)
 
 NB: нужно уметь рассчитывать vif ручками, зная коэффициенты R^2 во вспомогательных регрессиях. Например:
 ```{r}
-m.vif1 <- lm(speed~I(speed^2)+I(speed^3),data=h)
+m.vif1 <- lm(speed ~ I(speed^2) + I(speed^3), data = cars)
 r2.1 <- summary(m.vif1)$r.squared
-vif1 <- 1/(1-r2.1)
+vif1 <- 1 / (1 - r2.1)
 vif1
 ```
 
@@ -124,8 +127,8 @@ vcov(m.poly3)
 
 Можно построить прогноз длины тормозного пути для машины с скоростью $speed=10$ миль в час.
 ```{r, "confint"}
-new <- data.frame(speed=10)
-predict(m.poly3,newdata=new,interval='confidence')
+new <- data.frame(speed = 10)
+predict(m.poly3, newdata=new, interval = 'confidence')
 ```
 
 Если нужно вытащить стандартную ошибку для $\hat{y}$, то можно внутрь команды `predict` добавить опцию `se.fit=TRUE`. 
@@ -135,8 +138,8 @@ predict(m.poly3,newdata=new,interval='confidence')
 
 Попробуем перейти к центированным переменным.
 ```{r}
-h$spc <- h$speed - mean(h$speed)
-m.poly3c <- lm(dist~spc+I(spc^2)+I(spc^3),data=h)
+cars$spc <- cars$speed - mean(cars$speed)
+m.poly3c <- lm(dist ~ spc + I(spc^2) + I(spc^3), data = cars)
 summary(m.poly3c)
 ```
 
@@ -149,8 +152,8 @@ vcov(m.poly3c)
 
 И если построить доверительный интервал для прогнозов, то ничего не изменится.
 ```{r}
-new$spc <- 10 - mean(h$speed)
-predict(m.poly3c,newdata=new,interval='confidence')
+new$spc <- 10 - mean(cars$speed)
+predict(m.poly3c, newdata = new, interval = 'confidence')
 ```
 
 Модель с центрированными переменными --- это всего лишь по-другому записанная исходная модель.
@@ -188,7 +191,7 @@ $E(y)=\beta_1+\beta_2 x +\beta_3 z$?
 В регрессии $y$ на $x$ и $z$ коэффициент при $x$ показывает насколько изменится $y$ при изменении $x$ на единичку и фиксированном $z$. В регрессии $y$ на $x$ коэффициент при $x$ показывает насколько изменится $y$ при изменении $x$ на единичку и нефиксированном $z$.
 
 ```{r, "less variables"}
-m.line <- lm(dist~speed,data=h)
+m.line <- lm(dist ~ speed, data = cars)
 summary(m.line)
 ```
 ## Метод главных компонент
@@ -216,8 +219,8 @@ summary(m.line)
 
 Делаем RR в R  :)
 ```{r}
-lambdas <- seq(0.1,10,by=0.1) # для этих лямбд будем делать RR
-m.rr <- lm.ridge(dist~speed+I(speed^2)+I(speed^3),lambda=lambdas,data=h)
+lambdas <- seq(0.1, 10, by = 0.1) # для этих лямбд будем делать RR
+m.rr <- lm.ridge(dist ~ speed + I(speed^2) + I(speed^3), lambda = lambdas, data = cars)
 ```
 
 Посмотрим, как зависят оценки коэффициентов, от штрафа за высокие значения $\hat{\beta}$:
@@ -264,9 +267,9 @@ LASSO очень похож на RR, отличие состоит в том, ч
 
 LASSO в R. Сначала надо ручками сваять матрицу регрессоров без единичного столбца.
 ```{r}
-X <- model.matrix(~0+speed+I(speed^2)+I(speed^3),data=cars)
-y <- h$dist
-fit <- glmnet(X,y,alpha=0)
+X <- model.matrix(~ 0 + speed + I(speed^2) + I(speed^3), data = cars)
+y <- cars$dist
+fit <- glmnet(X, y, alpha = 0)
 plot(fit)
 ```
 
@@ -278,12 +281,12 @@ head(fit$a0) # вектор оценок свободных коэффициен
 
 И оценки остальных коэффициентов для каждого лямбда
 ```{r}
-fit$beta[,1:5] # покажем только первые 5
+fit$beta[, 1:5] # покажем только первые 5
 ```
 
 Выбираем оптимальное лямбда с помощью кросс-валидации (без подробностей)
 ```{r}
-cv.fit <- cv.glmnet(X,y)
+cv.fit <- cv.glmnet(X, y)
 cv.fit$lambda.min
 ```
 
@@ -296,13 +299,13 @@ $q_{\alpha}(y)=\beta_1+\beta_2 x +\beta_3 z$
 Здесь $q_{\alpha}$ - это квантиль порядка $\alpha$
 
 ```{r}
-m.poly3q <- rq(dist~speed+I(speed^2)+I(speed^3),data=h,tau=c(0.1,0.5,0.9))
+m.poly3q <- rq(dist ~ speed + I(speed^2) + I(speed^3), data = cars, tau = c(0.1, 0.5, 0.9))
 plot(m.poly3q)
 ```
 
 В квантильной регрессии нет простых явных формул для оценок дисперсий коэффициентов. Один из популярных способов получить их --- бутстрэп. Без подробностей.
 ```{r, "boot se"}
-summary(m.poly3q,se='boot')
+summary(m.poly3q, se = 'boot')
 ```
 
 Изобразим на одном графике линию обычной регрессии и линии квантильных регрессий.
