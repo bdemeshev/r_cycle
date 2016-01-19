@@ -42,27 +42,38 @@ summary(m1)
 ```{r, warning=FALSE}
 ggplot(data = flats, aes(x = price, y = brick)) +
   geom_point(position = position_jitter(height = 0.05), alpha = 0.2) +
-  stat_smooth(method = "glm", family = binomial, formula = y ~ poly(x, 4)) +
-  labs(x = "Цена квартиры, $1000", y = "Кирпичный дом или нет", title = "График logit модели")
+  stat_smooth(method.args = list(family = "binomial"), 
+              method = "glm", 
+              formula = y ~ poly(x, 4)) +
+  labs(x = "Цена квартиры, $1000", 
+       y = "Кирпичный дом или нет", 
+       title = "График logit модели")
 ```
 
 Две гистограммки:
 ```{r}
 ggplot(data = flats, aes(x = price, fill = factor(brick))) + geom_density(alpha = 0.5) + 
-  labs(x = "Цена квартиры, $1000", y = "Плотность", title = "") + scale_fill_discrete(name = "Материал",
-  breaks = c("1", "0"),  labels = c("Кирпич", "Другой"))
+  scale_fill_discrete(name = "Материал", 
+                      breaks = c("1", "0"),  
+                      labels = c("Кирпич", "Другой")) +
+  labs(x = "Цена квартиры, $1000", 
+       y = "Плотность", 
+       title = "Цены квартир в кирпичных и не кирпичных домах") 
 ```
 
 Виолончельки:
 ```{r}
-ggplot(data = flats, aes(y = price, x = factor(brick))) +
-  geom_violin() + scale_x_discrete(labels = c("Другой", "Кирпич")) + labs(x = "Материал", 
-  y = "Цена квартиры, $1000", title = "")
+ggplot(data = flats, aes(y = price, x = factor(brick))) + geom_violin() + 
+  scale_x_discrete(labels = c("Другой", "Кирпич")) + 
+  labs(x = "Материал", 
+       y = "Цена квартиры, $1000", 
+       title = "Цены квартир в кирпичных и не кирпичных домах")
 ```
 
 Прогнозируем вероятности по нашей модели. Сравниваем их с настоящими $y_i$
 ```{r}
 flats$prob.brick <- fitted(m1)
+
 head(flats[c("brick", "prob.brick")])
 ```
 
