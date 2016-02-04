@@ -24,23 +24,24 @@ ggpairs(h)
 ```
 
 ```{r}
-formula <- Fertility~Agriculture+Examination+Catholic+Education
+formula <- Fertility ~ Agriculture + Examination + Catholic + Education
 ```
 
 
 Обычный МНК:
 ```{r}
-m1 <- lm(formula, data=h)
+m1 <- lm(formula, data = h)
 summary(m1)
 ```
 
 ```{r}
-priors <- c(2,0.8,0.5,0.3,-5)
+priors <- c(2, 0.8, 0.5, 0.3, -5)
 ```
 
 
 ```{r}
-m1.mcmc <- MCMCregress(formula,data=h,b0=priors,B0=0.0001)
+m1.mcmc <- MCMCregress(formula, data = h, 
+                       b0 = priors, B0 = 0.0001)
 summary(m1.mcmc)
 ```
 
@@ -63,20 +64,29 @@ colnames(beta.sample)[1] <- "const"
 
 Построим апостериорное распределение свободного члена и визуально оценим сходимость:
 ```{r}
-ggplot(beta.sample,aes(x=const))+geom_density()
-qplot(t,Agriculture,data=beta.sample)
+ggplot(beta.sample,aes(x = const)) + geom_density()
+qplot(t, Agriculture, data = beta.sample)
 ```
 
 Оценим модель с другим априорным мнением о коэффициентах:
 ```{r}
-priors <- c(0.2,0.1,0.2,-0.3,-0.1) 
+priors <- c(0.2, 0.1, 0.2, -0.3, -0.1) 
 ```
 
 ```{r}
-m1.mcmc <- MCMCregress(formula,data=h,b0=priors, B0=0.0001 ) 
+m1.mcmc <- MCMCregress(formula, data = h, 
+                       b0 = priors, B0 = 0.0001) 
 summary(m1.mcmc)
 ```
 
 
+Сюда добавить:
+`geweke.diag`, `heidel.diag`, `rafbery.diag`, `gelman.diag` и более симпатичные графики :)
+
+
+Почиташки:
+
+* Виньетка к [`MCMCglmm`](https://cran.r-project.org/web/packages/MCMCglmm/vignettes/CourseNotes.pdf) в виде курса лекций :)
+* Виньетка к ['MCMCpack'](http://www.jstatsoft.org/article/view/v042i09/v42i09.pdf)
 
 
