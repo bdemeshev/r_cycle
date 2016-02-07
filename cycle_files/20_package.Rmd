@@ -20,7 +20,7 @@ lang: russian
 ```{r, eval=FALSE}
 Package: honey
 Type: Package
-Title: R package to get honey.
+Title: R package to get honey
 Version: 0.1
 Date: 2014-07-25
 Author: Winni-the-Pooh
@@ -28,6 +28,11 @@ Maintainer: Winni-the-Pooh <xxx.yyy@zzz.com>
 Description: This package contains functions useful to distinguish good and bad bees.
 License: MIT
 ```
+Мелочи: 
+
+* поле `Title` не должно содержать точку в конце
+* поле `Description` должно состоять из одного или нескольких предложений и должно содержать точку в конце.
+
 * Перед каждой функцией файла `honey.R` пишем документацию примерно такого вида:
 
 ```{r, eval=FALSE}
@@ -44,7 +49,8 @@ License: MIT
 
 * В папке `honey` создаём файл `NEWS` с описанием истории создания пакета. Мы его будем обновлять при выходе новых версий. Для начала он может быть очень простым:
 ```{r, eval=FALSE}
-
+# honey 0.1
+* first public release of the package :)
 ```
 
 * В начале файла `honey.R` пишем описание пакета в целом:
@@ -121,8 +127,7 @@ dev_mode(FALSE)
 
 Любой другой человек сможет установить наш пакет командами
 ```{r, eval=FALSE}
-library("devtools")
-install_github("username/honey")
+devtools::install_github("username/honey")
 ```
 здесь вместо `username` подразумевается гитхабовское имя владельца пакета.
 
@@ -135,4 +140,5 @@ library("honey")
 Почиташки:
 
 * Hadley Wickham, [R packages](http://r-pkgs.had.co.nz/)
+* Simko, [From R code to R package](https://github.com/vsimko/course-rpackages)
 
