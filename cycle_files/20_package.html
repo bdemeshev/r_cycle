@@ -61,7 +61,7 @@ img {
 
 <div id="header">
 <h1 class="title"><a href="http://bdemeshev.github.io/r_cycle/">Заметки по R</a>: Написание пакета для R</h1>
-<h4 class="date"><em>05.12.2015</em></h4>
+<h4 class="date"><em>30.01.2016</em></h4>
 </div>
 
 
@@ -80,15 +80,18 @@ img {
 </ul>
 <pre class="r"><code>Package: honey
 Type: Package
-Title: R package to get honey.
+Title: R package to get honey
 Version: 0.1
 Date: 2014-07-25
 Author: Winni-the-Pooh
 Maintainer: Winni-the-Pooh &lt;xxx.yyy@zzz.com&gt;
 Description: This package contains functions useful to distinguish good and bad bees.
 License: MIT</code></pre>
+<p>Мелочи:</p>
 <ul>
-<li>Перед каждой функцией файла <code>honey.R</code> пишем документацию примерно такого вида:</li>
+<li>поле <code>Title</code> не должно содержать точку в конце</li>
+<li><p>поле <code>Description</code> должно состоять из одного или нескольких предложений и должно содержать точку в конце.</p></li>
+<li><p>Перед каждой функцией файла <code>honey.R</code> пишем документацию примерно такого вида:</p></li>
 </ul>
 <pre class="r"><code>#' Evaluates the amount of good honey given the tree
 #'
@@ -100,8 +103,12 @@ License: MIT</code></pre>
 #' @examples
 #' honey_evaluate(tree)</code></pre>
 <ul>
-<li><p>В папке <code>honey</code> создаём файл <code>NEWS</code> с описанием истории создания пакета. Мы его будем обновлять при выходе новых версий. Для начала он может быть очень простым:</p></li>
-<li><p>В начале файла <code>honey.R</code> пишем описание пакета в целом:</p></li>
+<li>В папке <code>honey</code> создаём файл <code>NEWS</code> с описанием истории создания пакета. Мы его будем обновлять при выходе новых версий. Для начала он может быть очень простым:</li>
+</ul>
+<pre class="r"><code># honey 0.1
+* first public release of the package :)</code></pre>
+<ul>
+<li>В начале файла <code>honey.R</code> пишем описание пакета в целом:</li>
 </ul>
 <pre class="r"><code>#' honey
 #'
@@ -165,14 +172,14 @@ library(&quot;honey&quot;)</code></pre>
 <div id="-" class="section level1">
 <h1>Загрузка пакета</h1>
 <p>Любой другой человек сможет установить наш пакет командами</p>
-<pre class="r"><code>library(&quot;devtools&quot;)
-install_github(&quot;username/honey&quot;)</code></pre>
+<pre class="r"><code>devtools::install_github(&quot;username/honey&quot;)</code></pre>
 <p>здесь вместо <code>username</code> подразумевается гитхабовское имя владельца пакета.</p>
 <p>И далее использовать после обычного</p>
 <pre class="r"><code>library(&quot;honey&quot;)</code></pre>
 <p>Почиташки:</p>
 <ul>
 <li>Hadley Wickham, <a href="http://r-pkgs.had.co.nz/">R packages</a></li>
+<li>Simko, <a href="https://github.com/vsimko/course-rpackages">From R code to R package</a></li>
 </ul>
 </div>
 
