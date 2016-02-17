@@ -20,7 +20,8 @@ devtools::install_github("bdemeshev/rlms")
 devtools::install_github("bdemeshev/sophisthse")
 devtools::install_github("bdemeshev/datamos")
 devtools::install_github("rOpenGov/rustfare")
-install.packages("rusquant", repos="http://R-Forge.R-project.org", type="source")
+devtools::install_github("bdemeshev/cbr")
+install.packages("rusquant", repos = "http://R-Forge.R-project.org", type = "source")
 ```
 
 Остальные пакеты устанавливаются стандартным способом
@@ -85,14 +86,22 @@ plot(shapefile)
 
 Некоторые данные по России на Quandl
 
-WDI
+Что нам скажет WDI про Россию?
+
+```{r}
+dat <- WDI(country = "RU", indicator = c("BN.CAB.XOKA.GD.ZS", "BX.KLT.DINV.WD.GD.ZS"), start = 2001, end = 2015)
+```
+
 
 OECD
 
 
 
-По материалам
+Почиташки:
 
-[https://github.com/vincentarelbundock/WDI](https://github.com/vincentarelbundock/WDI)
+* Пакет [https://github.com/vincentarelbundock/WDI](https://github.com/vincentarelbundock/WDI)
+* Пакет [rlms](https://github.com/bdemeshev/rlms)
+* Пакет [sophisthse](https://github.com/bdemeshev/sophisthse)
+* Пакет [cbr](https://github.com/bdemeshev/cbr)
 
 
