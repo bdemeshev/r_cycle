@@ -10,9 +10,9 @@ lang: russian
 library("mfx") # подсчет предельных эффектов
 library("ggplot2") # графики
 library("lmtest") # линейные регрессии 
-library("foreign") # чтение файлов в некоторых форматах 
-library("xtable") # таблицы в LaTeX и HTML
-library("texreg") # обработка результатов регрессии
+library("foreign") # чтение файлов в некоторых форматах
+library("dplyr") # манипуляции с таблицами
+library("broom") # описание модели в виде таблички
 ```
 
 Загружаем [данные](https://github.com/bdemeshev/em301/raw/master/datasets/mesto_jenshini.dta) в R:
@@ -30,13 +30,12 @@ role <- read.dta("../datasets/mesto_jenshini.dta")
 
 Проверяем, что всё корректно загрузилось --- `.dta` это не родной для R формат. 
 ```{r}
-head(role)
-summary(role)
+glimpse(role)
 ```
 
-Let's look on some specific variables. Income. Probably year income divided by family size.
+Смотрим на описательные статистики:
 ```{r}
-summary(role$adjinc)
+tidy(role)[c("column", "n", "mean", "median", "min", "max", "sd")]
 ```
 
 Несколько графиков до построения моделей:
@@ -50,24 +49,30 @@ ggplot(role) + geom_bar(aes(factor(agree))) + scale_x_discrete(breaks = c("1", "
 
 Логит, пробит и мнк. Предпосылки применения мнк нарушены, но мы его всё равно применим и посмотрим, что выйдет.
 ```{r}
-m.logit <- glm(agree ~ age + adjinc + nsibs,
+m_logit <- glm(agree ~ age + adjinc + nsibs,
           data = role,
           family = binomial(link = "logit"))
-m.probit <- glm(agree ~ age + adjinc + nsibs,
+m_probit <- glm(agree ~ age + adjinc + nsibs,
           data = role,
           family = binomial(link = "probit"))
-m.ols <- glm(agree ~ age + adjinc + nsibs,
+m_ols <- glm(agree ~ age + adjinc + nsibs,
           data = role)
 ```
 
-Посмотрим на логит модель:
+Кратко о логит-модели:
 ```{r}
-summary(m.logit)
+glance(m_logit)
 ```
 
-Ковариационную матрицу оценок коэффициентов раздобыть легко
+Оценки коэффициентов:
 ```{r}
-vcov(m.logit)
+tidy(m_logit)
+```
+
+
+Ковариационную матрицу оценок коэффициентов также раздобыть легко
+```{r}
+vcov(m_logit)
 ```
 
 
@@ -86,7 +91,7 @@ logitmfx(agree ~ age + adjinc + nsibs, data = role)
 
 Создаем набор данных, для которого мы будем строить прогнозы:
 ```{r}
-new <- data.frame(age = c(20, 24),
+new <- data_frame(age = c(20, 24),
                   adjinc = c(16000, 4000),
                   nsibs = c(2, 5))
 new
@@ -94,33 +99,45 @@ new
 
 В логит и пробит-моделях можно прогнозировать значение скрытой переменной (склонности ответить "да") или вероятность $y_i=1$ (вероятность ответить "да"). Прогноз скрытой переменной:
 ```{r}
-predict(m.logit, new)
+augment(m_logit, newdata = new)
 ```
 
 Немножко другой командой получаются прогнозы вероятности $y_i=1$:
 ```{r}
-predict(m.logit, new, type = "response")
+augment(m_logit, newdata = new, type.predict = "response")
 ```
-
-Поскольку в методе максимального правдоподобия оценка любого параметра является асимпотически нормальной, то доверительный интервал для любого параметра $a$ строится по принципу $[\hat{a}-z_{cr}se(\hat{a});\hat{a}+z_{cr}se(\hat{a})]$. Для того, чтобы получить стандартные ошибки, как для оценки ожидаемой склонности ответить "да", так и для оценки вероятности ответить "да", используется опция `se.fit=TRUE`.
-
-Поскольку чаще всего нужен доверительный интервал именно для вероятностей, мы построим только его. Если нужен доверительный интервал для ожидаемой склонности ответить да, то он строится аналогично:
-
-```{r}
-forecast <- predict(m.logit, new, type = "response", se.fit = TRUE)
-new$hat.p <- forecast$fit
-new$se.hat.p <- forecast$se.fit
-z.cr <- qnorm(0.975)
-new$ci.left <- new$hat.p - z.cr * new$se.hat.p
-new$ci.right <- new$hat.p + z.cr * new$se.hat.p
-new
-```
-
 
 Заметим приятный факт. Для средних значений регрессоров обычный МНК, который формально нельзя применять из-за нарушения предпосылок теоремы Гаусса-Маркова, даёт вполне корректные прогнозы:
-
+```{r}
+augment(m_ols, newdata = new)
+```
 
 Проблемы МНК видны на краевых значениях регрессоров. Тут запросто могут быть отрицательные вероятности :)
+
+```{r}
+augment(m_ols, newdata = data_frame(age = 100, adjinc = 10^5, nsibs = 0))
+```
+
+
+
+Поскольку в методе максимального правдоподобия оценка любого параметра является асимпотически нормальной, то доверительный интервал для любого параметра $a$ строится по принципу $[\hat{a}-z_{cr}se(\hat{a});\hat{a}+z_{cr}se(\hat{a})]$. 
+
+
+Поскольку чаще всего нужен доверительный интервал именно для вероятностей, мы построим только его. Если нужен доверительный интервал для ожидаемой склонности ответить да, то достаточно просто убрать опцию `prediction.type`:
+
+```{r}
+new2 <- augment(m_logit, newdata = new, type.predict = "response")
+z_cr <- qnorm(0.975)
+new2 <- mutate(new2, 
+               ci_left = .fitted - z_cr * .se.fit,
+               ci_right = .fitted + z_cr * .se.fit)
+new2
+```
+
+
+
+
+
 
 
 
@@ -131,17 +148,17 @@ Binary prediction. Best binary prediction?
 
 Likelihood ratio, LR-test, Тест отношения правдоподобия
 ```{r}
-m2.logit <- glm(agree ~ age + age2 + adjinc + nsibs,
+m2_logit <- glm(agree ~ age + age2 + adjinc + nsibs,
           data = role,
           family = binomial(link = "logit"))
-lrtest(m.logit, m2.logit)
+lrtest(m_logit, m2_logit)
 ```
 
 Lagrange multiplier test, LM-test, тест множителей Лагранжа (? by hands)
 
 Wald-test, Тест Вальда
 ```{r}
-waldtest(m.logit, m2.logit, test = "Chisq")
+waldtest(m_logit, m2_logit, test = "Chisq")
 ```
 
 
