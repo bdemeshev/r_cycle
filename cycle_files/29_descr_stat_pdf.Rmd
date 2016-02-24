@@ -1,0 +1,23 @@
+---
+title: "Описательные статистики и графики в pdf"
+output: html_document
+---
+```{r, warning=FALSE, message=FALSE, include=FALSE}
+library("knitr")
+options(width = 110)
+opts_chunk$set(warning = FALSE, message = FALSE)
+```
+```{r}
+library("ggplot2")
+library("broom")
+library("psych")
+library("htmlTable")
+```
+
+Можно создавать симпатичные latex-таблички с описательными статистиками, с помощью, например, пакетов `reporttools` или `stargazer`.
+
+```{r, results='asis', include=FALSE, eval = FALSE}
+# pdf_version
+# красивая табличка, которая в html совсем не красивая
+
+stargazer(States)

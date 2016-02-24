@@ -1,0 +1,30 @@
+---
+title: "Описательные статистики и графики"
+output: html_document
+---
+```{r, warning=FALSE, message=FALSE, include=FALSE}
+library("knitr")
+options(width = 110)
+opts_chunk$set(warning = FALSE, message = FALSE)
+```
+```{r}
+library("ggplot2")
+library("broom")
+library("psych")
+library("Hmisc")
+```
+
+Совсем краткую информацию о наборе данных можно получить с помощью функции `glance` из пакета `broom`:
+```{r}
+glance(Orange)
+```
+
+Различные описательные статистики можно получить несколькими способами. Например, функцией `tidy` из того же пакета, функцией `describe` из пакета `psych` или пакета `Hmisc` и другими. 
+
+```{r}
+# Заметим, что раз функция describe есть в двух пакетах, R выбирает ту, пакет которой был 
+# загружен последним, т. е., в данном случае, Hmisc Но describe из psych всё равно можно 
+# использовать:
+
+psych::describe(Orange)
+```

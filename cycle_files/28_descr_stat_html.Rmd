@@ -1,0 +1,30 @@
+---
+title: "Описательные статистики в html"
+output: html_document
+---
+```{r, warning=FALSE, message=FALSE, include=FALSE}
+library("knitr")
+options(width = 110)
+opts_chunk$set(warning = FALSE, message = FALSE)
+```
+```{r}
+library("ggplot2")
+library("broom")
+library("psych")
+library("htmlTable")
+```
+
+Самый простой способ получить описательные статистики в формате html --- напрямую перевести их в нужный формат с помощью пакета `htmlTable`:
+```{r}
+statistics <- round(t(psych::describe(economics)), 0)
+htmlTable(statistics,
+          align = "r|r|r|")
+```
+
+С помощью параметра *align* можно выравнивать столбцы по указанной стороне. Вообще разнообразие параметров функции `htmlTable()` позволяет создавать самые разные таблицы (например, как в [этой](https://cran.r-project.org/web/packages/htmlTable/vignettes/tables.html) заметке).
+
+#### Параметры htmlTable 
+
+[Источник](https://cran.r-project.org/web/packages/htmlTable/vignettes/general.html) и ещё [один](https://cran.r-project.org/web/packages/htmlTable/vignettes/tables.html)
+
+#### html с shiny

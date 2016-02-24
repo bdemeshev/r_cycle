@@ -1,0 +1,185 @@
+---
+title: "Рабочие лошадки"
+output: html_document
+---
+---
+```{r set-options, message=FALSE, warning=FALSE}
+library("knitr")
+library("ggplot2") # графики
+library("dplyr")
+
+options(width = 110)
+opts_chunk$set(warning = FALSE)
+```
+```{r extr0, include=FALSE, eval=FALSE}
+# library("broom") # стандартизация информации о модели и описательные статистики
+# library("car") # множество полезных функций и наборов данных для регрессий
+# library("psych")
+# library("Hmisc")
+# library("reporttools") # latex-таблички для описательных статистик
+# library("xtable")
+# library("stargazer")
+# library("tables")
+# library("pander")
+# library("htmlTable")
+# library("DT")
+# library("caroline")
+# library("plyr")
+```
+```{r, include=FALSE, eval=FALSE}
+# mutate
+# melt
+# summary
+# штука с длинными и широкими таблицами
+# aggregate
+# count
+# subset
+# join
+# ddply
+# transform
+# match_df
+# filter
+# caroline::groupBy
+# arrange
+# transmute
+# select
+# slice
+# summarize
+# штуки вроде transmute с _ (Non-standard evaluation)
+```
+```{r, include=FALSE, eval=FALSE}
+# Скрытые чанки носят названия extr#
+```
+```{r extr1, eval=FALSE, include=FALSE}
+data <- data.frame(matrix(c(1:30), nrow = 6))
+names(data) <- c("A", "B", "C", "D", "E")
+```
+
+
+
+Больше описаний функций, хороших и разных!
+(черновой файл с описаниями, которые потом таскать в разные разделы)
+
+Описание функций ни в коей мере не претендует на полноту, но предназначено для указания на основные возможности.
+
+Подопытный кролик по умолчанию --- набор данных `diamonds` из пакета `ggplot2`.
+
+Если функции в разных пакетах носят одно и то же название, то R выберет ту, пакет с которой был подключен последним. Но чем слепо доверяться судьбе, лучше вызвать функцию из определённого пакета. Например, функцию `filter()` из пакета `dplyr` записать как `dplyr::filter()`. 
+
+Список описанных функций:
+
+* [`dplyr`](#dplyr)
+
+    + [`filter()`](#filter)
+  
+    + [`slice()`](#slice)
+  
+    + [`arrange()`](#arrange)
+  
+    + [`select()`](#select())
+    
+    + [`distinct()`](#distinct)
+    
+    + [`rename()`](#rename)
+    
+    + [`mutate()`](#mutate)
+    
+    + [`transmute()`](#mutate)
+
+
+
+### `dplyr`
+
+[Основной источник.](https://cran.rstudio.com/web/packages/dplyr/vignettes/introduction.html)
+
+Замечательной характерной чертой описанных ниже функций из пакета `dplyr` является их интуитивная понятность (название полностью соответствует действию). Большинство команд можно осуществить и другими способами (например, использованием сочетаний квадратных скобок), однако команды этого пакета делают код проще, понятнее, а так же позволяют легко его менять.
+
+#### **`filter()`**
+
+Функция позволяет отобрать набор наблюдений по указанному признаку.
+
+Например, камни наивысшей чистоты IF весом не менее двух карат:
+```{r}
+filter(diamonds, carat > 2, clarity == "IF")
+```
+
+```{r extr2}
+# Тот же набор данных можно было вызвать и следующей командой:
+
+diamonds[diamonds$carat > 2 & diamonds$clarity == "IF", ]
+
+# Однако использование `filter()` (и других команд, которые можно было бы заменить сочетанием квадратных скобок) является более предпочтительным --- их гораздо проще дополнять элементами, да и выглядят более логично для стороннего наблюдателя. 
+```
+
+Для отбора можно успешно использовать разные сочетания [логических операторов](https://stat.ethz.ch/R-manual/R-devel/library/base/html/Logic.html). Например:
+```{r}
+filter(diamonds, (table >= 75) & (color != c("I", "F", "E")))
+```
+
+#### **`slice()`**
+
+Функция позволяет извлечь часть строк по их порядковому номеру:
+```{r}
+slice(diamonds, 3:4)
+```
+
+#### **`arrange()`**
+
+Позволяет группировать данные по характеристикам:
+```{r}
+head(arrange(diamonds, carat))
+```
+
+Если указать сразу несколько, то сортировка будет по очереди указания. Сортировку можно проводить и в обратном порядке:
+```{r}
+head(arrange(diamonds, carat, desc(cut), table))
+```
+
+#### **`select()`** 
+
+Извлекает часть столбцов из набора. Извлечение можно делать как с помощью их номеров, так и с помощью названий, используя специальные команды вроде <i>starts_with, contains</i> и других (полный список --- в описании):
+
+```{r}
+head(select(diamonds, 1:2))
+head(select(diamonds, contains("clarity")))
+head(select(diamonds, carat:color))
+```
+
+Отбор можно проводить и исключая часть столбцов с помощью знака -:
+```{r}
+head(select(diamonds, -(2:8)))
+```
+
+#### **`distinct()`**
+
+Функция похожа на [`select()`](#select), но извлекает только указанные аргументы. Может выполнять вычисления и вносить их в таблицу аналогично [`mutate()`](#mutate).
+
+```{r}
+head(distinct(diamonds, mult = carat * table))
+```
+
+
+#### **`rename()`**
+
+Функция позволяет переименовать столбец:
+```{r}
+new_diamonds <- rename(diamonds, Cut = cut)
+colnames(new_diamonds)
+```
+
+
+#### **`mutate()`**
+
+Функции для добавления новых переменных. Для возвращения data frame целиком (с новыми переменными) ---`mutate()`, для только новых переменных --- `transmute()`.
+```{r}
+head(mutate(diamonds, mult = carat * table))
+head(transmute(diamonds, mult = carat * table))
+```
+
+
+#### summarise()
+
+#### sample_n() 
+
+####sample_frac()
+
