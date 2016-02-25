@@ -38,6 +38,8 @@ License: MIT
 ```{r, eval=FALSE}
 #' Evaluates the amount of good honey given the tree
 #'
+#' Evaluates the amount of good honey given the tree
+#'
 #' The amount of honey is estimated using the latest mcmc methods.
 #'
 #' @param tree the tree for which the amount of honey is estimated
@@ -57,12 +59,14 @@ License: MIT
 
 
 ```{r, eval=FALSE}
-#' honey
+#' honey: package to deal with good and bad bees
+#'
+#' Extremely important package for every Bear
+#'
+#' I've written this package a long time ago in a far-far galaxy.
 #'
 #' @name honey
 #' @docType package
-#' @author Winnie-the-Pooh 
-#' @import MCMCpack ggplot2
 NULL
 ```
 
@@ -95,7 +99,6 @@ NULL
 * Загрузили пакеты для разработки, зашли в папку нашего пакета, включили режим разработки
 ```{r, eval=FALSE}
 library("devtools")
-library("roxygen2")
 setwd("honey")
 
 dev_mode()
@@ -103,17 +106,11 @@ dev_mode()
 
 * Что-то там изменили в функции и в её документации
 
-* Обновили документацию
+* Обновили документацию и провели базовую проверку пакета:
 ```{r, eval=FALSE}
-document()
+check()
 ```
 
-* установили и загрузили новую версию пакета
-```{r, eval=FALSE}
-
-install("../honey")
-library("honey")
-```
 
 * Опять изменили, опять обновили. До тех пор, пока не надоест или не заработает.
 ```{r, eval=FALSE}
