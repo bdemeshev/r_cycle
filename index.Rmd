@@ -31,7 +31,7 @@ lang: russian
 * 24. Работа с данными rlms (план)
 * 25. Графики --- дело тонкое!
 * [26. R внутри документов](cycle_files/26_literate_programming.html)
-
+* [31. ARMA модели](cycle_files/31_arma_models.html)
 
 
 
