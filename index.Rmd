@@ -46,7 +46,7 @@ lang: russian
 
 
 
-#### Спефицика R
+#### Специфика R
 * [Облачные вычисления с R](cycle_files/19_cloud.html)
 * [Создание своего пакета R](cycle_files/20_package.html)
 * [R внутри документов](cycle_files/26_literate_programming.html)
