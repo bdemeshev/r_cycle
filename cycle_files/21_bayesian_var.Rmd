@@ -18,9 +18,8 @@ library("MSBVAR")
 Пакет `MSBVAR` позволяет оценивать байесовские VAR с марковским переключением. Пакет `bvarr` реализует шесть разных предпосылок на априорное распределение и является переводом на `R` матлабовского кода [Koop и Korobilis](http://personal.strath.ac.uk/gary.koop/bayes_matlab_code_by_koop_and_korobilis.html). Пакет `bvarr` пока нужно ставить с гитхаба:
 
 
-```{r, eval=FALSE, echo=TRUE}
-library("devtools")
-install_github("bdemeshev/bvarr")
+```{r, eval = FALSE, echo = TRUE}
+devtools::install_github("bdemeshev/bvarr")
 ```
 
 Если он установлен, то используется он стандартно:
@@ -45,13 +44,13 @@ mvtsplot(IsraelPalestineConflict)
 
 Оцениваем байесовскую VAR
 ```{r}
-fit.BVAR <- szbvar(IsraelPalestineConflict, p=6,
-                   lambda0=0.6, lambda1=0.1,
-                   lambda3=2, lambda4=0.25, lambda5=0, mu5=0,
-                   mu6=0, nu=3, qm=4, posterior.fit=FALSE)
+fit.BVAR <- szbvar(IsraelPalestineConflict, p = 6,
+                   lambda0 = 0.6, lambda1 = 0.1,
+                   lambda3 = 2, lambda4 = 0.25, lambda5 = 0, mu5 = 0,
+                   mu6 = 0, nu = 3, qm = 4, posterior.fit = FALSE)
 
 summary(fit.BVAR)
-posterior.impulses <- mc.irf(fit.BVAR, nsteps=10, draws=5000)
+posterior.impulses <- mc.irf(fit.BVAR, nsteps = 10, draws = 5000)
 plot(posterior.impulses) 
 ```
  
@@ -66,14 +65,14 @@ head(Y)
 head(z2)
 m <- ncol(Y)
 ident <- diag(m)
-ident[1,] <- 1
-ident[2,1] <- 1
+ident[1, ] <- 1
+ident[2, 1] <- 1
 
 mvtsplot(Y)
 # estimate the model's posterior moments
-model <- szbsvar(Y, p=5, z=z2, lambda0=0.8, lambda1=0.1,
-                 lambda3=1, lambda4=0.1, lambda5=0.05,
-                 mu5=0, mu6=5, ident, qm=12)
+model <- szbsvar(Y, p = 5, z = z2, lambda0 = 0.8, lambda1 = 0.1,
+                 lambda3 = 1, lambda4 = 0.1, lambda5 = 0.05,
+                 mu5 = 0, mu6 = 5, ident, qm = 12)
 
 
 summary(model)
@@ -84,8 +83,8 @@ summary(model)
 simulate A0 posterior
 Построение IRF требует на один шаг больше:
 ```{r}
-A0.post <- gibbs.A0(model,N1=1000,N2=5000)
-model.irfs <- mc.irf(model,nsteps=10,draws=5000,A0.posterior=A0.post)
+A0.post <- gibbs.A0(model, N1 = 1000, N2 = 5000)
+model.irfs <- mc.irf(model, nsteps = 10, draws = 5000, A0.posterior = A0.post)
 plot(model.irfs)
 ```
 
@@ -101,7 +100,7 @@ bvar.imp.plot(model)
 
 * [Виньетка `vars` пакета](http://www.jstatsoft.org/v27/i04/paper)
 
-* Шикарная [виньетка дохлого `MBR` пакета](http://www.polmeth.wustl.edu/media/Paper/brand02.pdf). Смотрите на download, затем link.
+* Шикарная [виньетка `MBR` пакета](http://www.polmeth.wustl.edu/media/Paper/brand02.pdf). Смотрите на download, затем link.
 
 * [Как перестать беспокоиться и полюбить временные ряды](https://www.empiwifo.uni-freiburg.de/freeman_files/bayesian%20time%20series)
 

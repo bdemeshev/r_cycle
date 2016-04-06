@@ -61,7 +61,7 @@ img {
 
 <div id="header">
 <h1 class="title"><a href="http://bdemeshev.github.io/r_cycle/">Заметки по R</a>: Источники данных о России</h1>
-<h4 class="date"><em>05.12.2015</em></h4>
+<h4 class="date"><em>17.02.2016</em></h4>
 </div>
 
 
@@ -76,15 +76,14 @@ devtools::install_github(&quot;bdemeshev/rlms&quot;)
 devtools::install_github(&quot;bdemeshev/sophisthse&quot;)
 devtools::install_github(&quot;bdemeshev/datamos&quot;)
 devtools::install_github(&quot;rOpenGov/rustfare&quot;)
-install.packages(&quot;rusquant&quot;, repos=&quot;http://R-Forge.R-project.org&quot;, type=&quot;source&quot;)</code></pre>
+devtools::install_github(&quot;bdemeshev/cbr&quot;)
+install.packages(&quot;rusquant&quot;, repos = &quot;http://R-Forge.R-project.org&quot;, type = &quot;source&quot;)</code></pre>
 <p>Остальные пакеты устанавливаются стандартным способом</p>
 <pre class="r"><code>library(&quot;ggplot2&quot;)
 library(&quot;Quandl&quot;)
 library(&quot;quantmod&quot;)
-library(&quot;sophisthse&quot;)</code></pre>
-<pre><code>## Warning: replacing previous import by 'stringr::%&gt;%' when loading
-## 'sophisthse'</code></pre>
-<pre class="r"><code>library(&quot;datamos&quot;)
+library(&quot;sophisthse&quot;)
+library(&quot;datamos&quot;)
 library(&quot;rlms&quot;)
 library(&quot;rustfare&quot;)
 library(&quot;WDI&quot;)
@@ -120,8 +119,10 @@ plot(shapefile)</code></pre>
 <p>Некоторые данные по России на Quandl</p>
 <p>WDI</p>
 <p>OECD</p>
-<p>По материалам</p>
-<p><a href="https://github.com/vincentarelbundock/WDI"><a href="https://github.com/vincentarelbundock/WDI" class="uri">https://github.com/vincentarelbundock/WDI</a></a></p>
+<p>Почиташки:</p>
+<ul>
+<li><a href="https://github.com/vincentarelbundock/WDI"><a href="https://github.com/vincentarelbundock/WDI" class="uri">https://github.com/vincentarelbundock/WDI</a></a></li>
+</ul>
 
 
 </div>

@@ -1,0 +1,125 @@
+---
+title: "[Заметки по R](http://bdemeshev.github.io/r_cycle/): ARMA модели"
+date: "`r format(Sys.time(), '%d.%m.%Y')`"
+output: html_document
+lang: russian
+---
+
+Загружаем нужные пакеты:
+```{r, message=FALSE, warning=FALSE}
+library("knitr") # создание отчётов
+opts_chunk$set(fig.align = 'center') # выравнивание картинок по центру
+
+library("ggplot2") # графики
+library("forecast") # прогнозирование временных рядов
+library("xts") # тест Бройша-Пагана
+library("dplyr") # манипуляции с данными
+theme_set(theme_bw()) # чёрно-белая тема оформления графиков
+```
+
+
+Рассмотрим ARMA(1,1) модель
+
+\[
+y_t = 0.7y_{t-1} + \varepsilon_t + 0.5\varepsilon_{t-1} 
+\]
+
+Рассчитаем теоретические значения ACF и PACF
+```{r}
+acf <- ARMAacf(ar = 0.7, ma = 0.5, lag.max = 10)
+pacf <- ARMAacf(ar = 0.7, ma = 0.5, lag.max = 10, pacf = TRUE)
+```
+
+Покажем ACF и PACF в общей табличке. По какой-то необъяснимой логике при расчёте теоретических ACF R начинает с нулевого лага, а при расчёте PACF - с первого. Именно поэтому мы пишем `tail(acf, -1)`, это избавит нас от ACF для нулевого лага, всегда равной 1.
+
+```{r}
+apacf <- data_frame(lag = 1:10, acf = tail(acf, -1), pacf = pacf)
+apacf
+```
+
+Одно дело - теоретические ACF/PACF другое дело - выборочные.
+
+Зафиксируем стартовое зерно генератора случайных чисел. Затем сгенерируем интересующий нас процесс
+```{r}
+set.seed(49)
+y <- arima.sim(n = 120, list(ar = 0.7, ma = 0.5))
+```
+
+Покажем график ряда и рядом оценённые ACF/PACF
+```{r}
+tsdisplay(y)
+```
+
+Оценим несколько конкурирующих моделей:
+```{r}
+ma3 <- Arima(y, order = c(0, 0, 3))
+ar2 <- Arima(y, order = c(2, 0, 0)) 
+arma11 <- Arima(y, order = c(1, 0, 1))
+```
+
+Например, посмотрим на результаты оценивания ARMA(1,1):
+```{r}
+arma11
+```
+
+То есть оценённое уравнение имеет вид:
+\[
+(y_t - 0.12) = 0.84\cdot (y_{t-1} - 0.12) + \varepsilon_t + 0.39\varepsilon_{t-1}
+\]
+
+Отберём наилучшую модель по критерию AIC:
+
+\[
+AIC = -2 \cdot \ln L + 2 \cdot k,
+\]
+где $\ln L$ - логарифм функции правдоподобия, а $k$ - число параметров модели.
+
+```{r}
+AIC(ma3)
+AIC(ar2)
+AIC(arma11)
+```
+
+По критерию AIC лучше оказалась модель AR(2).
+
+Можно также использовать BIC
+\[
+BIC = -2 \cdot \ln L + \ln n \cdot k.
+\]
+
+
+По выбранной наилучшей модели можно строить прогнозы:
+```{r}
+forecast(ar2, h = 5)
+```
+
+Или можно построить график прогнозов с предиктивными интервалами:
+```{r}
+future <- forecast(ar2, h = 5)
+plot(future)
+```
+
+
+Но всё уже придумано до нас 
+
+![Уже](31_vse_ukradeno_do_nas.jpg)
+
+И особо ленивые могут воспользоваться готовой функцией
+```{r}
+model <- auto.arima(y)
+model
+```
+
+Пакет `forecast` автоматически отбирает $ARMA(1, 1)$
+
+
+Из известных мне косяков: пакет `forecast` может отказываться подключаться, если окошко для графиков в Rstudio очень маленькое :)
+
+
+
+### Чтиво:
+
+* Rob Hyndman, [Forecasting principles and practice](https://www.otexts.org/fpp/8). Отличный учебник по временным рядам с примерами на R
+* Rob Hyndman, [Automatic Time Series Forecasting](https://www.jstatsoft.org/article/view/v027i03). Подробности про функцию `auto.arima`.
+* Свободный доступ к статьям на [sci-hub](http://www.sci-hub.io)
+

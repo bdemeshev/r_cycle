@@ -8,7 +8,7 @@ lang: russian
 Загружаем нужные пакеты:
 ```{r, message=FALSE, warning=FALSE}
 library("knitr") # создание отчётов
-opts_chunk$set(fig.align='center') # выравнивание картинок по центру
+opts_chunk$set(fig.align = 'center') # выравнивание картинок по центру
 
 library("ggplot2") # графики
 library("sandwich") # оценка Var для гетероскедастичности
