@@ -6,7 +6,7 @@ lang: russian
 ---
 
 Загружаем нужные пакеты:
-```{r}
+```{r, message = FALSE}
 library("randomForest")
 library("ggplot2")
 ```
@@ -23,7 +23,7 @@ library("ggplot2")
 
 Индекс Джини --- это вероятность того, что типы двух случайно независимо друг от друга выбранных объектов не совпадут. Индекс Джини равен
 \[
-I_G=\sum_i f_i(1-f_i)
+I_G=\sum_i f_i(1-f_i) = 1 - \sum_i f_i^2
 \]
 Энтропия определяется как (при соглашении $0 \cdot \ln 0=0$)
 \[
@@ -38,7 +38,7 @@ I_E= - \sum f_i \ln f_i
 
 ...
 
-При каждом ветвлении дерево разбивает выборку на несколько частей (обысно на две): $A_1$, $A_2$, ... Индекс Джини или энтропия для выборки разбитой на несколько частей определяется как взвешенные по частям:
+При каждом ветвлении дерево разбивает выборку на несколько частей (обычно на две): $A_1$, $A_2$, ... Индекс Джини или энтропия для выборки разбитой на несколько частей определяется как взвешенные по частям:
 
 \[
 I_G(Tree)=\sum_j P(A_j) \cdot I_G(A_j)
@@ -60,6 +60,7 @@ I_E(Tree)=\sum_j P(A_j) \cdot I_E(A_j)
 ## Как посадить одно дерево для количественной переменной?
 
 Дерево  можно также строить для непрерывной зависимой переменной. Отличий немного:
+
 * вместо индекса Джини или энтропии считается просто сумма квадратов остатков
 * для каждого терминального узла прогнозируется не класс, которому принадлежит $y$, а само значение $y$
 * для непрерывной переменной $y$ ветвление дерева прекращается, если в терминальном узле оказывается 5 наблюдений и меньше
@@ -80,7 +81,7 @@ I_E(Tree)=\sum_j P(A_j) \cdot I_E(A_j)
 
 Загружаем данные:
 ```{r}
-h <- read.table("~/Documents/em301/datasets/flats_moscow.txt", header=TRUE)
+h <- read.table("~/Documents/em301/datasets/flats_moscow.txt", header = TRUE)
 ```
 
 Сажаем случайный лес. Тут важно, что есть два алгоритма --- случайный лес для качественной переменной и случайный лес для количественной переменной. R сам определит, какой использовать, если правильно указать тип записимой переменной, numeric или factor. 
@@ -88,13 +89,13 @@ h <- read.table("~/Documents/em301/datasets/flats_moscow.txt", header=TRUE)
 str(h$brick)
 h$brick <- as.factor(h$brick)
 str(h$brick)
-model <- randomForest(brick~price+totsp+kitsp+dist,data=h)
+model <- randomForest(brick ~ price + totsp + kitsp + dist, data = h)
 ```
 
 Строим прогнозы вероятностей
 ```{r}
-new.data <- data.frame(price=100,totsp=60,kitsp=10,dist=13)
-predict(model,new.data,type="prob")
+new_data <- data.frame(price = 100, totsp = 60, kitsp = 10, dist = 13)
+predict(model, new_data, type = "prob")
 ```
 
 
@@ -105,7 +106,7 @@ predict(model,new.data,type="prob")
 Посмотрим на первое дерево в лесу:
 
 ```{r}
-tree1 <- getTree(model,1,labelVar=TRUE)
+tree1 <- getTree(model, 1, labelVar = TRUE)
 head(tree1)
 ```
 
@@ -119,8 +120,8 @@ head(tree1)
 
 Переоценим нашу модель заново, теперь попросим R посчитать меры важности регрессоров:
 ```{r}
-model <- randomForest(brick~price+totsp+kitsp+dist,data=h,
-                      importance=TRUE)
+model <- randomForest(brick ~ price + totsp + kitsp + dist, 
+                      data = h, importance = TRUE)
 ```
 
 
@@ -142,4 +143,6 @@ importance(model)
 Для небольших наборов данных можно посчитать меры близости, т.е. насколько каждые два наблюдения близки между собой. 
 
 
+Почиташки:
 
+* [SKYNET классифицирует тебя!](http://arstechnica.co.uk/security/2016/02/the-nsas-skynet-program-may-be-killing-thousands-of-innocent-people/): В пакистанском случайном лесу гибнут невинные террористы!
