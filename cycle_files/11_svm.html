@@ -252,6 +252,7 @@ head(probs)</code></pre>
 ## [5,] 0.2358058 0.7641942
 ## [6,] 0.3530213 0.6469787</code></pre>
 <p>Используя этот подход можно построить и кривые предельных эффектов.</p>
+<p>В случае, если SVM идеально разделяет игреки на обучающей выборке оценить вероятности не получится. Дело здесь в том, что при идеальной классификации не существует оптимума правдоподобия в задаче оценки логит-модели.</p>
 </div>
 <div id="-" class="section level2">
 <h2>Няшные графики</h2>
@@ -420,7 +421,7 @@ fit</code></pre>
 <h3>Ссылки:</h3>
 <ul>
 <li><p><a href="http://www.csie.ntu.edu.tw/~cjlin/papers/guide/guide.pdf">A Practical Guide to Support Vector Classiffication</a>, отсюда взята инструкция по практике SVM</p></li>
-<li><p><a href="http://pyml.sourceforge.net/doc/howto.pdf">A User’s Guide to Support Vector Machines</a> — картинки, помогающие понять разницу гауссовского ядра для разных <span class="math inline">\(C\)</span> и <span class="math inline">\(\sigma\)</span> с примерами на питоне. Питон — это еще один подходящий язык програмирования для анализа данных.</p></li>
+<li><p><a href="http://pyml.sourceforge.net/doc/howto.pdf">A User’s Guide to Support Vector Machines</a> — картинки, помогающие понять разницу гауссовского ядра для разных <span class="math inline">\(C\)</span> и <span class="math inline">\(\sigma\)</span> с примерами на питоне. Питон — это ещё один подходящий язык програмирования для анализа данных.</p></li>
 <li><p>Пакет caret: <a href="http://caret.r-forge.r-project.org/">официальный сайт</a>, <a href="http://www.jstatsoft.org/v28/i05/paper">статья в JSS</a>, и <a href="http://cran.cermin.lipi.go.id/web/packages/caret/vignettes/caretTrain.pdf">введение побольше</a>. Пакет достаточно активно обновляется и это радует :)</p></li>
 <li><p>Воронцов, <a href="http://www.ccas.ru/voron/download/SVM.pdf">Лекции по методу опорных векторов</a></p></li>
 </ul>

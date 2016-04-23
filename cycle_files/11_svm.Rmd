@@ -163,7 +163,7 @@ head(probs)
 Используя этот подход можно построить и кривые предельных эффектов.
 
 
-
+В случае, если SVM идеально разделяет игреки на обучающей выборке оценить вероятности не получится. Дело здесь в том, что при идеальной классификации не существует оптимума правдоподобия в задаче оценки логит-модели.
 
 
 ## Няшные графики
@@ -323,7 +323,7 @@ head(predict(fit, test_flats , type = "prob"))
 
 * [A Practical Guide to Support Vector Classiffication](http://www.csie.ntu.edu.tw/~cjlin/papers/guide/guide.pdf), отсюда взята инструкция по практике SVM 
 
-* [A User's Guide to Support Vector Machines](http://pyml.sourceforge.net/doc/howto.pdf) --- картинки, помогающие понять разницу гауссовского ядра для разных $C$ и $\sigma$ с примерами на питоне. Питон --- это еще один подходящий язык програмирования для анализа данных.
+* [A User's Guide to Support Vector Machines](http://pyml.sourceforge.net/doc/howto.pdf) --- картинки, помогающие понять разницу гауссовского ядра для разных $C$ и $\sigma$ с примерами на питоне. Питон --- это ещё один подходящий язык програмирования для анализа данных.
 
 * Пакет caret: [официальный сайт](http://caret.r-forge.r-project.org/), [статья  в JSS](http://www.jstatsoft.org/v28/i05/paper), и [введение побольше](http://cran.cermin.lipi.go.id/web/packages/caret/vignettes/caretTrain.pdf). Пакет достаточно активно обновляется и это радует :)
 
