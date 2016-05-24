@@ -148,8 +148,9 @@ for (person_no in 1:n_persons) {
   person_X_melted <- df_X_sep %>% dplyr::filter(id == person_id) %>% 
     dplyr::select(-id, -version)
   
-  person_X <- dcast(person_X_melted, card + alternative  ~ variable, value.var = "value")
-  person_X <- dplyr::select(person_X, -card, -alternative) %>% as.matrix()
+  person_X_df <- dcast(person_X_melted, card + alternative  ~ variable, 
+                       value.var = "value")
+  person_X <- dplyr::select(person_X_df, -card, -alternative) %>% as.matrix()
 
   choice_data[[person_no]] <- list(y = person_y, X = person_X)
 }
@@ -157,11 +158,12 @@ for (person_no in 1:n_persons) {
 ```
 
 
-Структура матриц $y$ и $X$ для типичного индивида:
+Структура матриц $y$ и $X$ для последнего индивида. Для наглядности в матрице $X$ сохранены номера карточек и альтернатив:
 ```{r}
-head(choice_data[[1]]$X)
-head(choice_data[[1]]$y)
+head(person_y)
+head(person_X_df)
 ```
+
 
 
 
