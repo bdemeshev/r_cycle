@@ -1,0 +1,303 @@
+---
+title: "[Заметки по R](http://bdemeshev.github.io/r_cycle/): Иерархический мультиномиальны логит"
+date: "`r format(Sys.time(), '%d.%m.%Y')`"
+output: html_document
+lang: russian
+---
+
+
+
+Загружаем нужные библиотеки:
+```{r, message=FALSE, warning=FALSE}
+library("knitr")
+
+library("dplyr") # стратегия Разделяй - Властвуй - Соединяй
+library("reshape2") # melt - cast
+library("ggplot2") # графики
+library("MCMCpack")
+library("haven")
+library("bayesm")
+library("stringr")
+```
+
+
+
+```{r}
+help("rhierMnlRwMixture")
+```
+
+Стащено из http://www.r-bloggers.com/lets-do-some-more-hierarchical-bayes-choice-modeling-in-r/:
+Оценивается мультиномиальный логит:
+```{r, eval = FALSE, echo = FALSE}
+library("mlogit")
+data("Electricity", package = "mlogit")
+Electr <- mlogit.data(Electricity, id = "id", choice = "choice",
+  varying = 3:26, shape = "wide", sep = "")
+Elec.mxl <- mlogit(choice ~ pf + cl + loc + wk + tod + seas | 0, Electr,
+  rpar = c(pf = 'n', cl = 'n', loc = 'n', wk = 'n', tod = 'n', seas = 'n'),
+  R = 100, halton = NA, print.level = 0, panel = TRUE)
+summary(Elec.mxl)
+``` 
+
+
+Стащено из http://www.r-bloggers.com/lets-do-some-more-hierarchical-bayes-choice-modeling-in-r/:
+```{r, eval = FALSE, echo=FALSE}
+data("Electricity", package = "mlogit")
+id <- levels(as.factor(Electricity$id))
+nresp <- length(unique(id))
+lgtdata <- NULL
+ 
+for (i in 1:nresp)
+{
+  respdata <- Electricity[Electricity$id == id[i], ]
+  ty <- NULL
+  tdesign <- NULL
+  ty <- respdata$choice
+  nobs <- length(ty)
+  for (j in 1:nobs) {
+    design1 <- as.matrix(respdata[j, c(3, 7, 11, 15, 19, 23)])
+    design2 <- as.matrix(respdata[j, c(4, 8, 12, 16, 20, 24)])
+    design3 <- as.matrix(respdata[j, c(5, 9, 13, 17, 21, 25)])
+    design4 <- as.matrix(respdata[j, c(6, 10, 14, 18, 22, 26)])
+    tdesign <- rbind(tdesign, design1, design2, design3, design4)
+  }
+  lgtdata[[i]] <- list(y = ty, X = as.matrix(tdesign))
+}
+ 
+mcmc_pars <- list(R = 2000, keep = 10)
+out <- rhierMnlRwMixture(Data = list(p = 4, lgtdata = lgtdata),
+                      Prior = list(ncomp = 1), Mcmc = mcmc_pars)
+ 
+plot(out$loglike, type = "l")
+trace <- t(apply(out$betadraw, c(2, 3), mean))
+matplot(trace, type = "l")
+ 
+beta.51_200 <- apply(out$betadraw[, , 51:200], 2, mean)
+beta.101_200 <- apply(out$betadraw[, , 101:200], 2, mean)
+beta.151_200 <- apply(out$betadraw[, , 151:200], 2, mean)
+cbind(beta.51_200, beta.101_200, beta.151_200)
+ 
+estimate <- apply(out$betadraw[, , 101:200], c(1, 2), mean)
+estimate2 <- cbind(matrix(id), estimate)
+write.csv(estimate2, file = "estimate.csv")
+
+
+```
+
+
+
+Читаем файл
+```{r}
+df <- read_spss("~/Downloads/conjoint_1.sav")
+```
+
+
+Посмотрим на данные:
+```{r}
+glimpse(df)
+```
+
+
+
+Исходим из предположения, что каждому индивиду предлагалось одно и то же количество карточек. Также предполагаем, что на каждой карточке было одно и то же количество альтернатив.
+
+```{r}
+
+n_persons <- nrow(df)
+n_cards <- 7
+n_alternatives <- 5
+
+person_ids <- df$id
+
+# melting X and y:
+
+df_X <- dplyr::select(df, -ends_with("select"))
+df_y <- dplyr::select(df, ends_with("select"))
+df_X_melted <- melt(df_X, id.vars = c("id", "version"))
+glimpse(df_X_melted)
+df_X_sep <- tidyr::separate(df_X_melted, variable, into = c("card", "alternative", "variable"), sep = "_")
+# warning возникает из за разбивки "T1_C4_Host_provider". "provider" теряется
+# пока забьём
+
+
+
+# converting to list required by bayesm:
+# list lgtdata should contain for each person:
+# y numeric vector (n_card x 1)
+# X numeric matrix (n_card * n_alternatives) x (n_variables):
+# card alternative var1 var2
+#  1 1 xx zz
+#  1 2 xx zz
+#  2 1 xx zz
+#  2 2 xx zz
+
+choice_data <- list()
+for (person_no in 1:n_persons) {
+  person_id <- person_ids[person_no]
+  
+  person_y <- unlist(df_y[person_no, ])
+  names(person_y) <- NULL
+  # unlist нужен чтобы превратить tbl_df размера (1 x n_cards) в простой вектор
+  
+  person_X_melted <- df_X_sep %>% dplyr::filter(id == person_id) %>% 
+    dplyr::select(-id, -version)
+  
+  person_X <- dcast(person_X_melted, card + alternative  ~ variable, value.var = "value")
+  person_X <- dplyr::select(person_X, -card, -alternative) %>% as.matrix()
+
+  choice_data[[person_no]] <- list(y = person_y, X = person_X)
+}
+
+```
+
+
+Структура матриц $y$ и $X$ для заданного индивида:
+```{r}
+head(choice_data[[1]]$X)
+head(choice_data[[1]]$y)
+```
+
+
+
+Наконец оценим:
+```{r}
+# ncomp - количество смешиваемых нормальных распределений (кластеров среди покупателей)
+# p - число альтернатив (должно быть постоянно!)
+mcmc_pars <- list(R = 2000, keep = 10)
+# R - общее количество симуляций
+# keep = 10, сохраняем каждую 10ую
+
+out <- rhierMnlRwMixture(Data = list(p = 5, lgtdata = choice_data),
+                      Prior = list(ncomp = 1), Mcmc = mcmc_pars)
+
+```
+
+
+
+Логарифм правдоподобия???:
+```{r}
+plot(out$loglike, type = "l")
+```
+
+
+График бет усреднённый по индивидам:
+```{r, "individual mean plot"}
+burnin <- 50
+
+betas <- out$betadraw
+
+# betas: [n_person x n_variables x chain_lenght]
+chain_lenght <- dim(betas)[3]
+betas <- betas[, , (burnin + 1):chain_lenght]
+
+betas_mean <- t(apply(betas, c(2, 3), mean))
+matplot(betas_mean, type = "l")
+```
+
+Значения бет, усреднённые по индивидам:
+```{r}
+beta_estimate_df <- data.frame(varname = colnames(choice_data[[1]]$X),
+                                    beta_estimate = apply(betas, c(2), mean))
+beta_estimate_df
+```
+
+
+Тестируем сходимость...
+```{r}
+
+```
+
+Сохраняем беты для индивидов:
+```{r}
+personal_betas <- apply(betas, c(1, 2), mean)
+colnames(personal_betas) <- colnames(choice_data[[1]]$X)
+df_betas <- cbind(dplyr::select(df, id), personal_betas)
+head(df_betas)
+write.csv(df_betas, file = "person_betas.csv", row.names = FALSE)
+```
+
+
+
+Пример из хелпа
+```{r, eval = FALSE, echo = FALSE}
+if (nchar(Sys.getenv("LONG_TEST")) != 0) {
+  R <- 10000
+} else {
+  R <- 10
+}
+
+set.seed(66)
+p <- 3                                # num of choice alterns
+ncoef <- 3  
+nlgt <- 300                           # num of cross sectional units
+nz <- 2
+Z <- matrix(runif(nz * nlgt), ncol = nz)
+Z <- t(t(Z) - apply(Z, 2, mean))          # demean Z
+ncomp <- 3                                # no of mixture components
+Delta <- matrix(c(1, 0, 1, 0, 1, 2), ncol = 2)
+comps <- NULL
+comps[[1]] <- list(mu = c(0, -1, -2), rooti = diag(3))
+comps[[2]] <- list(mu = c(0, -1, -2) * 2, rooti = diag(3))
+comps[[3]] <- list(mu = c(0, -1, -2) * 4, rooti = diag(3))
+pvec <- c(.4, .2, .4)
+
+simmnlwX <- function(n, X, beta) {
+  ##  simulate from MNL model conditional on X matrix
+  k=length(beta)
+  Xbeta=X%*%beta
+  j=nrow(Xbeta)/n
+  Xbeta=matrix(Xbeta,byrow=TRUE,ncol=j)
+  Prob=exp(Xbeta)
+  iota=c(rep(1,j))
+  denom=Prob%*%iota
+  Prob=Prob/as.vector(denom)
+  y=vector("double",n)
+  ind=1:j
+  for (i in 1:n) 
+      {yvec=rmultinom(1,1,Prob[i,]); y[i]=ind%*%yvec}
+  return(list(y=y,X=X,beta=beta,prob=Prob))
+}
+
+## simulate data
+simlgtdata=NULL
+ni=rep(50,300)
+for (i in 1:nlgt) 
+{  betai=Delta%*%Z[i,]+as.vector(rmixture(1,pvec,comps)$x)
+   Xa=matrix(runif(ni[i]*p,min=-1.5,max=0),ncol=p)
+   X=createX(p,na=1,nd=NULL,Xa=Xa,Xd=NULL,base=1)
+   outa=simmnlwX(ni[i],X,betai)
+   simlgtdata[[i]]=list(y=outa$y,X=X,beta=betai)
+}
+
+## plot betas
+if(0){
+## set if(1) above to produce plots
+bmat=matrix(0,nlgt,ncoef)
+for(i in 1:nlgt) {bmat[i,]=simlgtdata[[i]]$beta}
+par(mfrow=c(ncoef,1))
+for(i in 1:ncoef) hist(bmat[,i],breaks=30,col="magenta")
+}
+
+##   set parms for priors and Z
+Prior1=list(ncomp=5)
+
+keep=5
+Mcmc1=list(R=R,keep=keep)
+Data1=list(p=p,lgtdata=simlgtdata,Z=Z)
+
+out=rhierMnlRwMixture(Data=Data1,Prior=Prior1,Mcmc=Mcmc1)
+
+cat("Summary of Delta draws",fill=TRUE)
+summary(out$Deltadraw,tvalues=as.vector(Delta))
+cat("Summary of Normal Mixture Distribution",fill=TRUE)
+summary(out$nmix)
+
+if(0) {
+## plotting examples
+plot(out$betadraw)
+plot(out$nmix)
+}
+
+```
+
+
