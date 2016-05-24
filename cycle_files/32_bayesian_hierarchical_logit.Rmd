@@ -98,7 +98,6 @@ glimpse(df)
 ```
 
 
-
 Исходим из предположения, что каждому индивиду предлагалось одно и то же количество карточек. Также предполагаем, что на каждой карточке было одно и то же количество альтернатив.
 
 ```{r}
@@ -114,14 +113,19 @@ person_ids <- df$id
 df_X <- dplyr::select(df, -ends_with("select"))
 df_y <- dplyr::select(df, ends_with("select"))
 df_X_melted <- melt(df_X, id.vars = c("id", "version"))
-glimpse(df_X_melted)
+
+head(df_X_melted)
+```
+
+Разбиваем название переменной на три составляющих:
+```{r}
 df_X_sep <- tidyr::separate(df_X_melted, variable, into = c("card", "alternative", "variable"), sep = "_")
 # warning возникает из за разбивки "T1_C4_Host_provider". "provider" теряется
 # пока забьём
+```
 
-
-
-# converting to list required by bayesm:
+Переделываем табличку с данными в список:
+```{r}
 # list lgtdata should contain for each person:
 # y numeric vector (n_card x 1)
 # X numeric matrix (n_card * n_alternatives) x (n_variables):
@@ -151,7 +155,7 @@ for (person_no in 1:n_persons) {
 ```
 
 
-Структура матриц $y$ и $X$ для заданного индивида:
+Структура матриц $y$ и $X$ для типичного индивида:
 ```{r}
 head(choice_data[[1]]$X)
 head(choice_data[[1]]$y)
