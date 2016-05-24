@@ -1,5 +1,5 @@
 ---
-title: "[Заметки по R](http://bdemeshev.github.io/r_cycle/): Иерархический мультиномиальны логит"
+title: "[Заметки по R](http://bdemeshev.github.io/r_cycle/): Иерархический мультиномиальный логит"
 date: "`r format(Sys.time(), '%d.%m.%Y')`"
 output: html_document
 lang: russian
@@ -14,8 +14,8 @@ library("knitr")
 library("dplyr") # стратегия Разделяй - Властвуй - Соединяй
 library("reshape2") # melt - cast
 library("ggplot2") # графики
-library("MCMCpack")
-library("haven")
+library("MCMCpack") 
+library("haven") 
 library("bayesm")
 library("stringr")
 ```
