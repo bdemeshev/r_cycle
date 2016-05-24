@@ -122,7 +122,9 @@ head(df_X_melted)
 df_X_sep <- tidyr::separate(df_X_melted, variable, into = c("card", "alternative", "variable"), sep = "_")
 # warning возникает из за разбивки "T1_C4_Host_provider". "provider" теряется
 # пока забьём
+head(df_X_sep)
 ```
+
 
 Переделываем табличку с данными в список:
 ```{r}
