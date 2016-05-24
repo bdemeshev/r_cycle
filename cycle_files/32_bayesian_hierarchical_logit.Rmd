@@ -100,6 +100,7 @@ glimpse(df)
 
 Исходим из предположения, что каждому индивиду предлагалось одно и то же количество карточек. Также предполагаем, что на каждой карточке было одно и то же количество альтернатив.
 
+Разрезаем исходную матрицу на две, $y$ и $X$:
 ```{r}
 
 n_persons <- nrow(df)
@@ -108,14 +109,19 @@ n_alternatives <- 5
 
 person_ids <- df$id
 
-# melting X and y:
 
 df_X <- dplyr::select(df, -ends_with("select"))
 df_y <- dplyr::select(df, ends_with("select"))
-df_X_melted <- melt(df_X, id.vars = c("id", "version"))
+head(df_y)
+```
 
+
+Превращаем матрицу $X$ из широкой в длинную:
+```{r}
+df_X_melted <- melt(df_X, id.vars = c("id", "version"))
 head(df_X_melted)
 ```
+
 
 Разбиваем название переменной на три составляющих:
 ```{r}
