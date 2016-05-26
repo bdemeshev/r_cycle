@@ -41,11 +41,12 @@ lang: russian
 * [ARMA модели](cycle_files/31_arma_models.html)
 * Единичный корень сотоварищи
 * GARCH
-* VAR/VECM
+* VAR/VECM: [пересказ от rakhab](http://rpubs.com/rakhab/9941) виньетки vars
 * [Байесовские VAR модели](cycle_files/21_bayesian_var.html)
 
 #### Байесовский подход
-* [Иерархический мультиномиальны логит](cycle_files/32_bayesian_hierarchical_logit.html)
+* [Иерархический мультиномиальный логит](cycle_files/32_bayesian_hierarchical_logit.html)
+* Иерархический мультиномиальный логит в JAGS
 
 #### Специфика R
 * [Облачные вычисления с R](cycle_files/19_cloud.html)
@@ -75,6 +76,8 @@ lang: russian
 Открыв любую заметку и заменив в адресной строке браузера разрешение `html` на `Rmd` можно увидеть исходный текст, по которому создавалась страничка.
 
 Репозиторий [заметок на гитхабе](https://github.com/bdemeshev/r_cycle). Скачать все [заметки в один клик](https://github.com/bdemeshev/r_cycle/archive/gh-pages.zip).
+
+Свободный доступ к научным статьям на [sci-hub](http://www.sci-hub.cc) :)
 
 Заметки распространяются по лицензии [Creative Commons Attribution-NonCommercial-ShareAlike](http://creativecommons.org/licenses/by-nc-sa/3.0/deed.ru)
 
