@@ -127,12 +127,14 @@ $(document).ready(function () {
 <p>Для написания пакета под windows надо установить <a href="https://cran.r-project.org/bin/windows/Rtools/"><code>RTools</code></a>, под macos/linux устанавливать <code>RTools</code> не требуется.</p>
 <div id="--" class="section level1">
 <h1>Первичное создание пакета</h1>
-<ul>
-<li>Создаём папку с названием нашего пакета, пусть будет пакет <code>honey</code>:)</li>
-<li>Внутри этой папки создаём подпапку <code>R</code>.</li>
-<li>Пишем несколько очень полезных функций и помещаем их в файл <code>honey.R</code> внутри папки <code>honey/R</code>. Если функций очень много, то их можно поместить в отдельные файлы.</li>
-<li>В папке <code>honey</code> создаём файл <code>DESCRIPTION</code> с описанием пакета. Примерно такой</li>
-</ul>
+<ol style="list-style-type: decimal">
+<li><p>Выбрали имя для пакета, пусть будет <code>honey</code> :)</p></li>
+<li><p>Создали репозиторий <code>honey</code> на <code>github</code> с двумя ветками, <code>master</code> и <code>dev</code>.</p></li>
+<li><p>Клонировали репозиторий. Переключились на ветку <code>dev</code>.</p></li>
+<li><p>Внутри этой папки создаём подпапку <code>R</code>.</p></li>
+<li><p>Пишем несколько очень полезных функций и помещаем их в файл <code>honey.R</code> внутри папки <code>honey/R</code>. Если функций очень много, то их можно поместить в отдельные файлы.</p></li>
+<li><p>В папке <code>honey</code> создаём файл <code>DESCRIPTION</code> с описанием пакета. Примерно такой</p></li>
+</ol>
 <pre class="r"><code>Package: honey
 Type: Package
 Title: R package to get honey
@@ -145,9 +147,11 @@ License: MIT</code></pre>
 <p>Мелочи:</p>
 <ul>
 <li>поле <code>Title</code> не должно содержать точку в конце</li>
-<li><p>поле <code>Description</code> должно состоять из одного или нескольких предложений и должно содержать точку в конце.</p></li>
-<li><p>Перед каждой функцией файла <code>honey.R</code> пишем документацию примерно такого вида:</p></li>
+<li>поле <code>Description</code> должно состоять из одного или нескольких предложений и должно содержать точку в конце.</li>
 </ul>
+<ol start="7" style="list-style-type: decimal">
+<li>Перед каждой функцией файла <code>honey.R</code> пишем документацию примерно такого вида:</li>
+</ol>
 <pre class="r"><code>#' Evaluates the amount of good honey given the tree
 #'
 #' Evaluates the amount of good honey given the tree
@@ -159,14 +163,14 @@ License: MIT</code></pre>
 #' @export
 #' @examples
 #' honey_evaluate(tree)</code></pre>
-<ul>
+<ol start="8" style="list-style-type: decimal">
 <li>В папке <code>honey</code> создаём файл <code>NEWS</code> с описанием истории создания пакета. Мы его будем обновлять при выходе новых версий. Для начала он может быть очень простым:</li>
-</ul>
+</ol>
 <pre class="r"><code># honey 0.1
 * first public release of the package :)</code></pre>
-<ul>
+<ol start="9" style="list-style-type: decimal">
 <li>В начале файла <code>honey.R</code> пишем описание пакета в целом:</li>
-</ul>
+</ol>
 <pre class="r"><code>#' honey: package to deal with good and bad bees
 #'
 #' Extremely important package for every Bear
@@ -176,14 +180,13 @@ License: MIT</code></pre>
 #' @name honey
 #' @docType package
 NULL</code></pre>
-<ul>
+<ol start="10" style="list-style-type: decimal">
 <li><p>Если пакет включает в себя наборы данных, то:</p>
 <ul>
-<li>Создаём подпапку <code>data</code> в папке <code>honey</code></li>
-<li>Помещаем в неё все файлы с данными, пусть будет <code>pot.Rds</code></li>
-<li>В файл <code>honey.R</code> после описания пакета в целом помещаем описание данных</li>
+<li>С помощью пакета <code>devtools</code> помещаем набор данных <code>pot</code> в нужное место, <code>use_data(pot)</code>.</li>
+<li>В файл <code>honey.R</code> после описания пакета в целом помещаем описание данных:</li>
 </ul></li>
-</ul>
+</ol>
 <pre class="r"><code>#' Data on honey prices
 #'
 #' A dataset containing xxx The variables are as follows:
@@ -201,32 +204,31 @@ NULL</code></pre>
 NULL</code></pre>
 </div>
 <div id="----" class="section level1">
-<h1>Типичный сценарий работы над пакетом</h1>
+<h1>Типичный цикл работы над пакетом</h1>
 <ol style="list-style-type: decimal">
-<li><p>Создали репозиторий на <code>github</code> с двумя ветками, master и dev.</p></li>
-<li><p>Загрузили пакеты для разработки, зашли в папку нашего пакета, включили режим разработки</p></li>
+<li>Загрузили пакеты для разработки, зашли в папку нашего пакета, включили режим разработки</li>
 </ol>
 <pre class="r"><code>library(&quot;devtools&quot;)
 setwd(&quot;honey&quot;)
 
 dev_mode()</code></pre>
-<ol start="3" style="list-style-type: decimal">
+<ol start="2" style="list-style-type: decimal">
 <li><p>Что-то там изменили в функциях и в документации</p></li>
 <li><p>Обновили документацию и провели базовую проверку пакета:</p></li>
 </ol>
 <pre class="r"><code>check()</code></pre>
-<ol start="5" style="list-style-type: decimal">
+<ol start="4" style="list-style-type: decimal">
 <li><p>Закоммитили изменения в <code>dev</code> ветку репозитория.</p></li>
 <li><p>Установили локально и подключили новую версию пакета для более подробного тестирования</p></li>
 </ol>
 <pre class="r"><code>install(&quot;../honey&quot;)
 library(&quot;honey&quot;)</code></pre>
-<ol start="7" style="list-style-type: decimal">
+<ol start="6" style="list-style-type: decimal">
 <li><p>Если не надоело, перешли к шагу 3.</p></li>
 <li><p>Вышли из режима разработки</p></li>
 </ol>
 <pre class="r"><code>dev_mode(FALSE)</code></pre>
-<ol start="9" style="list-style-type: decimal">
+<ol start="8" style="list-style-type: decimal">
 <li>Если получилось что-то путное, перенесли изменения из <code>dev</code> ветки в ветку <code>master</code></li>
 </ol>
 </div>
