@@ -46,7 +46,9 @@ lang: russian
 
 #### Байесовский подход
 * [Иерархический мультиномиальный логит](cycle_files/32_bayesian_hierarchical_logit.html)
+* [Введение в STAN](cycle_files/33_stan_intro.html)
 * Иерархический мультиномиальный логит в JAGS
+* [MCMC для стандартных моделей](cycle_files/15_mcmc_pack.html)
 
 #### Специфика R
 * [Облачные вычисления с R](cycle_files/19_cloud.html)
@@ -69,7 +71,6 @@ lang: russian
 * 25. Графики --- дело тонкое!
 * 13. Парсинг 
 * 14. Карты
-* [15. MCMC для простых моделей](cycle_files/15_mcmc_pack.html)
 * 16. Смешные xkcd-графики Хм! Тут в самую тему непараметрическая регрессия!
 
 
