@@ -115,7 +115,7 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore"><a href="http://bdemeshev.github.io/r_cycle/">Заметки по R</a>: Введение в STAN</h1>
-<h4 class="date"><em>14.06.2016</em></h4>
+<h4 class="date"><em>30.06.2016</em></h4>
 
 </div>
 
@@ -123,20 +123,118 @@ $(document).ready(function () {
 <p>Байесовский анализ сложных моделей возможен с помощью алгоритмов Монте-Карло по схеме Марковской цепи (MCMC). По идее, исследователь должен не только сформулировать модель, априорное мнение о параметрах модели, но и самостоятельно сконструировать цепь сходящуюся к апостериорному распределению параметров. Однако оказалось, что конструирование цепи в большинстве ситуаций можно доверить компьютеру.</p>
 <p><a href="http://mc-stan.org/">Программа STAN</a> — это не пакет R, а отдельный язык описания байесовских моделей. Ислледователь описывает модель и априорное распределение параметров, а STAN генерирует код C++, в котором запрограммирована требуемая марковская цепь. Среди альтернатив программе STAN можно назвать <a href="http://mcmc-jags.sourceforge.net/">JAGS</a>, <a href="http://r-nimble.org/">NIMBLE</a>, <a href="https://pymc-devs.github.io/pymc/">PyMC</a>.</p>
 <p>Для работы требуется установить пакет <code>rstan</code>, который содержит и свежую версию программы STAN. В силу того, что здесь взаимодействует много программ (R, STAN, компилятор C++), установку следует выполнять аккуратно, строго по <a href="https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started">инструкции на сайте STAN</a>.</p>
-<pre class="r"><code>library(&quot;rstan&quot;) # врубим на полную мощь Байеса!</code></pre>
-<pre><code>## Loading required package: ggplot2</code></pre>
-<pre><code>## rstan (Version 2.9.0-3, packaged: 2016-02-11 15:54:41 UTC, GitRev: 05c3d0058b6a)</code></pre>
-<pre><code>## For execution on a local, multicore CPU with excess RAM we recommend calling
-## rstan_options(auto_write = TRUE)
-## options(mc.cores = parallel::detectCores())</code></pre>
-<pre class="r"><code>library(&quot;shinystan&quot;) # и на полную громкость интерактивный анализ полученной цепи</code></pre>
-<pre><code>## Warning: package 'shinystan' was built under R version 3.2.5</code></pre>
-<pre><code>## Loading required package: shiny</code></pre>
-<pre><code>## 
-## This is shinystan version 2.2.0</code></pre>
+<pre class="r"><code>library(&quot;rstan&quot;) # врубим на полную мощь Байеса!
+library(&quot;shinystan&quot;) # и на полную громкость интерактивный анализ полученной цепи</code></pre>
 <p>Пара опций: определяем число ядер процессора, чтобы при симуляциях использовались все ядра и просим STAN сохранить скомпилированную модель, чтобы не перекомпилировать её для каждой цепи.</p>
 <pre class="r"><code>rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())</code></pre>
+<p>Модель 1:</p>
+<pre class="r"><code>model_bayesian_ls &lt;- &quot;
+data {
+  int n;
+  int k;
+  vector[n] y;
+  matrix[n, k] X;
+}
+parameters {
+  vector[k] beta;
+  real&lt;lower=0&gt; sigma;
+}
+model {
+  y ~ normal(X * beta, sigma);
+}
+&quot;</code></pre>
+<p>Формируем данные:</p>
+<pre class="r"><code>n &lt;- nrow(cars)
+k &lt;- 2
+y &lt;- cars$dist
+X &lt;- cbind(rep(1, n), cars$speed)
+cars_data &lt;- list(n = n, k = k, y = y, X = X)</code></pre>
+<p>Запускаем 4 цепи:</p>
+<pre class="r"><code>fit &lt;- stan(model_code = model_bayesian_ls, data = cars_data, 
+            iter = 1000, chains = 4)</code></pre>
+<pre><code>## In file included from file16b2037d52ceb.cpp:8:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math.hpp:4:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/rev/core.hpp:42:
+## /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/rev/core/set_zero_all_adjoints.hpp:14:17: warning: unused function 'set_zero_all_adjoints' [-Wunused-function]
+##     static void set_zero_all_adjoints() {
+##                 ^
+## In file included from file16b2037d52ceb.cpp:8:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math.hpp:4:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/rev/core.hpp:43:
+## /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/rev/core/set_zero_all_adjoints_nested.hpp:17:17: warning: 'static' function 'set_zero_all_adjoints_nested' declared in header file should be declared 'static inline' [-Wunneeded-internal-declaration]
+##     static void set_zero_all_adjoints_nested() {
+##                 ^
+## In file included from file16b2037d52ceb.cpp:8:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math.hpp:4:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/rev/mat.hpp:8:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/prim/mat.hpp:55:
+## /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/prim/mat/fun/autocorrelation.hpp:19:14: warning: function 'fft_next_good_size' is not needed and will not be emitted [-Wunneeded-internal-declaration]
+##       size_t fft_next_good_size(size_t N) {
+##              ^
+## In file included from file16b2037d52ceb.cpp:8:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math.hpp:4:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/rev/mat.hpp:8:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/prim/mat.hpp:36:
+## /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/prim/mat/err/check_positive_ordered.hpp:39:67: warning: unused typedef 'size_type' [-Wunused-local-typedef]
+##       typedef typename index_type&lt;Matrix&lt;T_y, Dynamic, 1&gt; &gt;::type size_type;
+##                                                                   ^
+## In file included from file16b2037d52ceb.cpp:8:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math.hpp:4:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/rev/mat.hpp:8:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/prim/mat.hpp:232:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/prim/arr.hpp:33:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/prim/arr/functor/integrate_ode_rk45.hpp:13:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/BH/include/boost/numeric/odeint.hpp:61:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/BH/include/boost/numeric/odeint/util/multi_array_adaption.hpp:29:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/BH/include/boost/multi_array.hpp:21:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/BH/include/boost/multi_array/base.hpp:28:
+## /Library/Frameworks/R.framework/Versions/3.2/Resources/library/BH/include/boost/multi_array/concept_checks.hpp:42:43: warning: unused typedef 'index_range' [-Wunused-local-typedef]
+##       typedef typename Array::index_range index_range;
+##                                           ^
+## /Library/Frameworks/R.framework/Versions/3.2/Resources/library/BH/include/boost/multi_array/concept_checks.hpp:43:37: warning: unused typedef 'index' [-Wunused-local-typedef]
+##       typedef typename Array::index index;
+##                                     ^
+## /Library/Frameworks/R.framework/Versions/3.2/Resources/library/BH/include/boost/multi_array/concept_checks.hpp:53:43: warning: unused typedef 'index_range' [-Wunused-local-typedef]
+##       typedef typename Array::index_range index_range;
+##                                           ^
+## /Library/Frameworks/R.framework/Versions/3.2/Resources/library/BH/include/boost/multi_array/concept_checks.hpp:54:37: warning: unused typedef 'index' [-Wunused-local-typedef]
+##       typedef typename Array::index index;
+##                                     ^
+## 8 warnings generated.</code></pre>
+<p>Апостериорное распределение параметров:</p>
+<pre class="r"><code>fit</code></pre>
+<pre><code>## Inference for Stan model: dd48765ea01c4aabdbe455473e42eb1a.
+## 4 chains, each with iter=1000; warmup=500; thin=1; 
+## post-warmup draws per chain=500, total post-warmup draws=2000.
+## 
+##            mean se_mean   sd    2.5%     25%     50%     75%   97.5% n_eff
+## beta[1]  -17.17    0.30 7.13  -30.77  -21.92  -17.33  -12.41   -3.12   559
+## beta[2]    3.91    0.02 0.44    3.03    3.61    3.93    4.21    4.71   568
+## sigma     15.78    0.05 1.62   13.10   14.62   15.62   16.79   19.29   920
+## lp__    -159.49    0.05 1.26 -162.74 -160.09 -159.18 -158.58 -158.03   659
+##         Rhat
+## beta[1] 1.02
+## beta[2] 1.02
+## sigma   1.00
+## lp__    1.01
+## 
+## Samples were drawn using NUTS(diag_e) at Thu Jun 30 09:09:26 2016.
+## For each parameter, n_eff is a crude measure of effective sample size,
+## and Rhat is the potential scale reduction factor on split chains (at 
+## convergence, Rhat=1).
+##  The estimated Bayesian Fraction of Missing Information is a measure of
+##  the efficiency of the sampler with values close to 1 being ideal.
+##  For each chain, these estimates are
+##  1 0.9 0.8 1.1</code></pre>
+<p>Модель 2:</p>
 <p>Описываем модель на языке STAN:</p>
 <pre class="r"><code>model_8_schools &lt;- &quot;
 data {
@@ -160,12 +258,68 @@ model {
 }
 &quot;</code></pre>
 <p>Задаем данные:</p>
-<pre class="r"><code>schools_dat &lt;- list(J = 8, 
+<pre class="r"><code>schools_data &lt;- list(J = 8, 
                     y = c(28,  8, -3,  7, -1,  1, 18, 12),
                     sigma = c(15, 10, 16, 11,  9, 11, 10, 18))</code></pre>
 <p>Запускаем 4 цепи:</p>
-<pre class="r"><code>fit &lt;- stan(model_code = model_8_schools, data = schools_dat, 
+<pre class="r"><code>fit &lt;- stan(model_code = model_8_schools, data = schools_data, 
             iter = 1000, chains = 4)</code></pre>
+<pre><code>## In file included from file16b202a34f616.cpp:8:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math.hpp:4:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/rev/core.hpp:42:
+## /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/rev/core/set_zero_all_adjoints.hpp:14:17: warning: unused function 'set_zero_all_adjoints' [-Wunused-function]
+##     static void set_zero_all_adjoints() {
+##                 ^
+## In file included from file16b202a34f616.cpp:8:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math.hpp:4:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/rev/core.hpp:43:
+## /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/rev/core/set_zero_all_adjoints_nested.hpp:17:17: warning: 'static' function 'set_zero_all_adjoints_nested' declared in header file should be declared 'static inline' [-Wunneeded-internal-declaration]
+##     static void set_zero_all_adjoints_nested() {
+##                 ^
+## In file included from file16b202a34f616.cpp:8:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math.hpp:4:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/rev/mat.hpp:8:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/prim/mat.hpp:55:
+## /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/prim/mat/fun/autocorrelation.hpp:19:14: warning: function 'fft_next_good_size' is not needed and will not be emitted [-Wunneeded-internal-declaration]
+##       size_t fft_next_good_size(size_t N) {
+##              ^
+## In file included from file16b202a34f616.cpp:8:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math.hpp:4:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/rev/mat.hpp:8:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/prim/mat.hpp:36:
+## /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/prim/mat/err/check_positive_ordered.hpp:39:67: warning: unused typedef 'size_type' [-Wunused-local-typedef]
+##       typedef typename index_type&lt;Matrix&lt;T_y, Dynamic, 1&gt; &gt;::type size_type;
+##                                                                   ^
+## In file included from file16b202a34f616.cpp:8:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math.hpp:4:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/rev/mat.hpp:8:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/prim/mat.hpp:232:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/prim/arr.hpp:33:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/StanHeaders/include/stan/math/prim/arr/functor/integrate_ode_rk45.hpp:13:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/BH/include/boost/numeric/odeint.hpp:61:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/BH/include/boost/numeric/odeint/util/multi_array_adaption.hpp:29:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/BH/include/boost/multi_array.hpp:21:
+## In file included from /Library/Frameworks/R.framework/Versions/3.2/Resources/library/BH/include/boost/multi_array/base.hpp:28:
+## /Library/Frameworks/R.framework/Versions/3.2/Resources/library/BH/include/boost/multi_array/concept_checks.hpp:42:43: warning: unused typedef 'index_range' [-Wunused-local-typedef]
+##       typedef typename Array::index_range index_range;
+##                                           ^
+## /Library/Frameworks/R.framework/Versions/3.2/Resources/library/BH/include/boost/multi_array/concept_checks.hpp:43:37: warning: unused typedef 'index' [-Wunused-local-typedef]
+##       typedef typename Array::index index;
+##                                     ^
+## /Library/Frameworks/R.framework/Versions/3.2/Resources/library/BH/include/boost/multi_array/concept_checks.hpp:53:43: warning: unused typedef 'index_range' [-Wunused-local-typedef]
+##       typedef typename Array::index_range index_range;
+##                                           ^
+## /Library/Frameworks/R.framework/Versions/3.2/Resources/library/BH/include/boost/multi_array/concept_checks.hpp:54:37: warning: unused typedef 'index' [-Wunused-local-typedef]
+##       typedef typename Array::index index;
+##                                     ^
+## 8 warnings generated.</code></pre>
 <p>Апостериорное распределение параметров:</p>
 <pre class="r"><code>fit</code></pre>
 <pre><code>## Inference for Stan model: 19c33eca0c63b510805d5af1962613a7.
@@ -173,30 +327,34 @@ model {
 ## post-warmup draws per chain=500, total post-warmup draws=2000.
 ## 
 ##           mean se_mean   sd   2.5%   25%   50%   75% 97.5% n_eff Rhat
-## mu        7.60    0.18 4.90  -2.08  4.29  7.60 10.98 17.24   751 1.01
-## tau       6.48    0.25 5.58   0.26  2.40  5.24  8.91 20.19   497 1.00
-## eta[1]    0.41    0.03 0.98  -1.57 -0.21  0.46  1.09  2.20  1349 1.00
-## eta[2]   -0.03    0.03 0.92  -1.88 -0.61 -0.04  0.57  1.81  1324 1.00
-## eta[3]   -0.20    0.02 0.90  -1.98 -0.81 -0.21  0.43  1.61  1316 1.00
-## eta[4]    0.02    0.02 0.88  -1.69 -0.57  0.04  0.62  1.67  1531 1.00
-## eta[5]   -0.35    0.02 0.86  -2.01 -0.91 -0.35  0.22  1.44  1312 1.00
-## eta[6]   -0.17    0.02 0.91  -1.89 -0.77 -0.20  0.40  1.71  1573 1.00
-## eta[7]    0.33    0.02 0.89  -1.52 -0.22  0.35  0.94  2.05  1519 1.00
-## eta[8]    0.05    0.03 0.94  -1.83 -0.56  0.02  0.69  1.80  1186 1.00
-## theta[1] 11.50    0.26 8.56  -1.36  5.98 10.30 15.23 34.16  1056 1.00
-## theta[2]  7.41    0.15 6.19  -5.77  3.47  7.61 11.48 19.51  1803 1.00
-## theta[3]  5.99    0.25 7.90 -11.81  1.74  6.55 10.83 20.16  1039 1.00
-## theta[4]  7.88    0.16 6.54  -4.52  3.56  7.90 12.01 20.83  1640 1.00
-## theta[5]  4.87    0.19 6.33  -9.40  1.40  5.27  9.12 15.51  1125 1.00
-## theta[6]  6.06    0.18 7.08  -9.76  2.13  6.42 10.78 18.72  1516 1.00
-## theta[7] 10.42    0.17 6.89  -1.53  5.73  9.95 14.17 25.69  1652 1.00
-## theta[8]  7.87    0.22 7.68  -7.94  3.24  7.99 12.34 22.70  1248 1.00
-## lp__     -4.96    0.11 2.65 -11.07 -6.56 -4.68 -3.05 -0.64   608 1.00
+## mu        8.43    0.19 5.04  -0.77  5.16  8.21 11.50 18.66   716 1.01
+## tau       5.83    0.23 5.14   0.18  2.10  4.47  8.00 19.72   518 1.00
+## eta[1]    0.36    0.03 0.96  -1.55 -0.25  0.40  0.98  2.18  1428 1.00
+## eta[2]   -0.01    0.02 0.92  -1.85 -0.61 -0.02  0.61  1.81  1549 1.00
+## eta[3]   -0.20    0.02 0.87  -1.86 -0.78 -0.22  0.39  1.55  1342 1.00
+## eta[4]   -0.07    0.02 0.92  -1.86 -0.68 -0.08  0.51  1.86  1519 1.00
+## eta[5]   -0.36    0.03 0.87  -2.04 -0.93 -0.39  0.18  1.46  1130 1.00
+## eta[6]   -0.24    0.02 0.94  -2.09 -0.87 -0.25  0.35  1.64  1446 1.00
+## eta[7]    0.26    0.02 0.89  -1.49 -0.32  0.25  0.86  1.97  1481 1.00
+## eta[8]    0.03    0.02 0.94  -1.74 -0.62  0.01  0.68  1.83  1581 1.00
+## theta[1] 11.29    0.27 8.17  -1.73  5.96 10.08 15.12 32.91   914 1.00
+## theta[2]  8.00    0.14 5.86  -3.91  4.23  8.09 11.62 19.39  1715 1.00
+## theta[3]  6.65    0.20 6.98  -8.66  3.10  7.06 10.86 19.31  1226 1.00
+## theta[4]  7.90    0.18 6.62  -4.69  3.99  7.74 11.59 22.18  1397 1.00
+## theta[5]  5.67    0.15 5.95  -7.87  2.11  6.03  9.61 16.13  1491 1.00
+## theta[6]  6.52    0.16 6.45  -7.55  2.72  6.93 10.65 18.19  1699 1.00
+## theta[7] 10.31    0.20 6.50  -0.95  5.90  9.73 13.84 25.05  1042 1.00
+## theta[8]  8.51    0.21 7.32  -5.62  4.11  8.28 12.62 24.17  1184 1.00
+## lp__     -5.09    0.12 2.66 -10.96 -6.70 -4.74 -3.20 -0.62   520 1.00
 ## 
-## Samples were drawn using NUTS(diag_e) at Tue Jun 14 15:15:53 2016.
+## Samples were drawn using NUTS(diag_e) at Thu Jun 30 09:10:03 2016.
 ## For each parameter, n_eff is a crude measure of effective sample size,
 ## and Rhat is the potential scale reduction factor on split chains (at 
-## convergence, Rhat=1).</code></pre>
+## convergence, Rhat=1).
+##  The estimated Bayesian Fraction of Missing Information is a measure of
+##  the efficiency of the sampler with values close to 1 being ideal.
+##  For each chain, these estimates are
+##  0.8 0.7 0.8 0.9</code></pre>
 <p>Графики:</p>
 <p>….</p>
 <p>Тесты на сходимость цепей:</p>
@@ -205,6 +363,10 @@ model {
 <pre class="r"><code>stan_demo()</code></pre>
 <p>Визуализировать полученную цепь КРАЙНЕ удобно интерактивно с помощью команды</p>
 <pre class="r"><code>shiny_stan_object &lt;- launch_shinystan(fit)</code></pre>
+<p>Почиташки:</p>
+<ul>
+<li><a href="https://medschool.vanderbilt.edu/cqs/files/cqs/fonnesbeck_cqs_presentation_bashar.pdf">Beyond winbugs</a>: обзор софта для MCMC с картинками :)</li>
+</ul>
 
 
 
