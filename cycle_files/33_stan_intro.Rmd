@@ -23,7 +23,7 @@ options(mc.cores = parallel::detectCores())
 ```
 
 
-Модель 1:
+Модель 1: Байесовский МНК
 
 ```{r}
 model_bayesian_ls <- "
@@ -57,7 +57,7 @@ cars_data <- list(n = n, k = k, y = y, X = X)
 
 
 Запускаем 4 цепи:
-```{r, message = FALSE, warning=FALSE}
+```{r, include = FALSE}
 fit <- stan(model_code = model_bayesian_ls, data = cars_data, 
             iter = 1000, chains = 4)
 ```
@@ -69,8 +69,10 @@ fit
 ```
 
 
+Модель 2: Байесовский логит
 
-Модель 2:
+
+Модель 3:
 
 
 Описываем модель на языке STAN:
@@ -107,7 +109,7 @@ schools_data <- list(J = 8,
 
 
 Запускаем 4 цепи:
-```{r, message = FALSE, warning=FALSE}
+```{r, include = FALSE}
 fit <- stan(model_code = model_8_schools, data = schools_data, 
             iter = 1000, chains = 4)
 ```
