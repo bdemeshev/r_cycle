@@ -7,7 +7,7 @@ lang: russian
 
 Байесовский анализ сложных моделей возможен с помощью алгоритмов Монте-Карло по схеме Марковской цепи (MCMC). По идее, исследователь должен не только сформулировать модель, априорное мнение о параметрах модели, но и самостоятельно сконструировать цепь сходящуюся к апостериорному распределению параметров. Однако оказалось, что конструирование цепи в большинстве ситуаций можно доверить компьютеру. 
 
-[Программа STAN](http://mc-stan.org/) --- это не пакет R, а отдельный язык описания байесовских моделей. Ислледователь описывает модель и априорное распределение параметров, а STAN генерирует код C++, в котором запрограммирована требуемая марковская цепь. Среди альтернатив программе STAN можно назвать [JAGS](http://mcmc-jags.sourceforge.net/), [NIMBLE](http://r-nimble.org/), [PyMC](https://pymc-devs.github.io/pymc/).  
+[Программа STAN](http://mc-stan.org/) --- это не пакет R, а отдельный язык описания байесовских моделей. Исследователь описывает модель и априорное распределение параметров, а STAN генерирует код C++, в котором запрограммирована требуемая марковская цепь. Среди альтернатив программе STAN можно назвать [JAGS](http://mcmc-jags.sourceforge.net/), R + пакет [NIMBLE](http://r-nimble.org/), python + пакет [PyMC](https://pymc-devs.github.io/pymc/), [Julia](http://julialang.org/) + змея [Mamba](http://mambajl.readthedocs.io/en/latest/) и Julia + [Klara](http://klarajl.readthedocs.io/en/latest/).   
 
 Для работы требуется установить пакет `rstan`, который содержит и свежую версию программы STAN. В силу того, что здесь взаимодействует много программ (R, STAN, компилятор C++), установку следует выполнять аккуратно, строго по [инструкции на сайте STAN](https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started).
 
@@ -43,8 +43,24 @@ model {
 "
 ```
 
+Блок `data` описывает, какие данные нужно передать STAN. Блок `model` описывает, хм, неужели модель?
 
+\[
+y|\beta, \sigma, X \sim \mathcal{N}(X\beta, \sigma^2 \cdot I)
+\]
 
+Блок `parameters` описывает априорное распределение. Если не указывать явно, то по умолчанию предполагаются равномерные распределения на допустимом множестве. Для вектора бет это означает:
+\[
+\beta_j \sim U(-\infty, \infty)
+\]
+Для константы $\sigma$ мы подразумеваем:
+\[
+\sigma \sim U(0, \infty)
+\]
+
+Конечно, настоящего равномерного распределения на неограниченном интервале не бывает, это несобственное распределение. Однако в данном случае апостериорное распределение оказывается собственным.
+
+Можно явно указать любое другое априорное распределение.
 
 Формируем данные:
 ```{r}
@@ -57,11 +73,15 @@ cars_data <- list(n = n, k = k, y = y, X = X)
 
 
 Запускаем 4 цепи:
-```{r, include = FALSE}
+```{r, eval=FALSE}
 fit <- stan(model_code = model_bayesian_ls, data = cars_data, 
             iter = 1000, chains = 4)
 ```
 
+```{r, include=FALSE}
+fit <- stan(model_code = model_bayesian_ls, data = cars_data, 
+            iter = 1000, chains = 4)
+```
 
 Апостериорное распределение параметров:
 ```{r}
@@ -91,7 +111,7 @@ parameters {
 transformed parameters {
   real theta[J];
   for (j in 1:J)
-    theta[j] <- mu + tau * eta[j];
+    theta[j] = mu + tau * eta[j];
 }
 model {
   eta ~ normal(0, 1);
@@ -109,11 +129,15 @@ schools_data <- list(J = 8,
 
 
 Запускаем 4 цепи:
-```{r, include = FALSE}
+```{r, eval=FALSE}
 fit <- stan(model_code = model_8_schools, data = schools_data, 
             iter = 1000, chains = 4)
 ```
 
+```{r, include=FALSE}
+fit <- stan(model_code = model_8_schools, data = schools_data, 
+            iter = 1000, chains = 4)
+```
 
 Апостериорное распределение параметров:
 ```{r}
@@ -146,7 +170,7 @@ shiny_stan_object <- launch_shinystan(fit)
 Почиташки:
 
 * [Beyond winbugs](https://medschool.vanderbilt.edu/cqs/files/cqs/fonnesbeck_cqs_presentation_bashar.pdf): обзор софта для MCMC с картинками :)
-
+* [Официальная документация STAN](http://mc-stan.org/documentation/). Там ещё куча ссылок есть!
 
 
 
