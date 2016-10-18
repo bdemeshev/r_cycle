@@ -116,7 +116,7 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore"><a href="http://bdemeshev.github.io/r_cycle/">Заметки по R</a>: Работа с панельными данными</h1>
-<h4 class="date"><em>04.10.2016</em></h4>
+<h4 class="date"><em>18.10.2016</em></h4>
 
 </div>
 
@@ -437,9 +437,10 @@ m.fe.lm &lt;- lm(inv ~ capital + value + factor(firm), data = h)</code></pre>
 <p>Здесь нулевая гипотеза о верности сквозной регресси, то есть о том, что <span class="math inline">\(c_i\)</span> тождественно равны <span class="math inline">\(0\)</span>, отвергается.</p>
 </div>
 <div id="-" class="section level2">
-<h2>Типичные проблемы</h2>
+<h2>Мелочи жизни</h2>
 <ul>
-<li>Оценки по методу FE невозможно получить оценки коэффициентов при регрессорах, не изменяющихся во времени. Здесь для глупого примера включим номер фирмы :) А R его благополучно выкинет как неидентифицируемый.</li>
+<li><p>Что называют <a href="http://stats.stackexchange.com/questions/183206/package-plm-random-effect-residuals">остатками RE модели в R и в Stata</a></p></li>
+<li><p>Оценки по методу FE невозможно получить оценки коэффициентов при регрессорах, не изменяющихся во времени. Здесь для глупого примера включим номер фирмы :) А R его благополучно выкинет как неидентифицируемый.</p></li>
 </ul>
 <pre class="r"><code>m_fe_bad &lt;- plm(inv ~ capital + firm, data = h, model = &quot;within&quot;)
 summary(m_fe_bad)</code></pre>
