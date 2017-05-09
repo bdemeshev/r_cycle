@@ -14,6 +14,7 @@ lang: russian
 ```{r, warning = FALSE, message = FALSE}
 library("rstan") # врубим на полную мощь Байеса!
 library("shinystan") # и на полную громкость интерактивный анализ полученной цепи
+library("rstanarm")
 ```
 
 Пара опций: определяем число ядер процессора, чтобы при симуляциях использовались все ядра и просим STAN сохранить скомпилированную модель, чтобы не перекомпилировать её для каждой цепи.
@@ -38,6 +39,7 @@ parameters {
   real<lower=0> sigma;
 }
 model {
+  beta[2] ~ uniform(0, 100000);
   y ~ normal(X * beta, sigma);
 }
 "
@@ -74,14 +76,10 @@ cars_data <- list(n = n, k = k, y = y, X = X)
 
 Запускаем 4 цепи:
 ```{r, eval=FALSE}
-fit <- stan(model_code = model_bayesian_ls, data = cars_data, 
-            iter = 1000, chains = 4)
+fit <- stan(model_code = model_bayesian_ls, 
+            data = cars_data, iter = 1000, chains = 4)
 ```
 
-```{r, include=FALSE}
-fit <- stan(model_code = model_bayesian_ls, data = cars_data, 
-            iter = 1000, chains = 4)
-```
 
 Апостериорное распределение параметров:
 ```{r}
@@ -89,7 +87,57 @@ fit
 ```
 
 
-Модель 2: Байесовский логит
+Модель 2:
+
+Задача от Томаса Байеса!
+
+Изначально мы верим, что вероятность выпадения орла, $b$, равномерна на отрезке $[0;1]$.
+
+Каждое наблюдение равно 0 или 1, $P(Y_i = 1|b) = b$.
+
+
+```{r}
+model_the_bayes <- "
+data {
+  int N;
+  int y[N];
+}
+parameters {
+  real<lower=0, upper=1> b; 
+}
+model {
+  b ~ beta(10, 3); // uniform(0, 1); // beta(0, 0) = uniform(0, 1)
+  // prior should cover all possible values of parameter
+  // at least with small density
+
+  for (n in 1:N) {
+    y[n] ~ bernoulli(b);
+  }
+}
+"
+```
+
+
+Формируем данные:
+```{r}
+y <- c(1, 1, 0, 1, 0, 0, 1)
+N <- length(y)
+bayes_data <- list(N = N, y = y)
+```
+
+
+Запускаем 4 цепи:
+```{r, eval=FALSE}
+fit <- stan(model_code = model_the_bayes, 
+            data = bayes_data, iter = 1000, chains = 4)
+```
+
+
+Апостериорное распределение параметров:
+```{r}
+fit
+```
+
 
 
 Модель 3:
