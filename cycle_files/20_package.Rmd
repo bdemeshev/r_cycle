@@ -7,7 +7,14 @@ lang: russian
 
 > Каждая домохозяйка должна уметь создать пакет для R!
 
-Для выпечки своего домашнего пакета R потребуется установить пакеты `devtools` --- для удобства инсталляции и `roxygen2` --- для документирования.
+Для выпечки своего домашнего пакета R потребуется установить пакеты:
+
+* `devtools` — удобство разработки пакетов;
+* `roxygen2` — документирование своих функций;
+* `testthat` — тестирование своих функций;
+* `covr` — информация о покрытии тестированием;
+* `lintr` — проверка стиля кода.
+
 
 Для написания пакета под windows надо установить [`RTools`](https://cran.r-project.org/bin/windows/Rtools/), под macos/linux устанавливать `RTools` не требуется.
 
@@ -15,54 +22,44 @@ lang: russian
 
 1. Выбрали имя для пакета, пусть будет `honey` :)
 
-2. Создали репозиторий `honey` на `github` с двумя ветками, `master` и `dev`. 
+2. Создали пустую структуру папок для пакета:
+```{r, eval=FALSE}
+devtools::create("где-то там/honey")
+setwd("где-то там/honey")
+devtools::use_testthat()
+```
 
-3. Клонировали репозиторий. Переключились на ветку `dev`.
-
-4. Внутри этой папки создаём подпапку `R`.
-
-5. Пишем несколько очень полезных функций и помещаем их в файл `honey.R` внутри папки `honey/R`. Если функций очень много, то их можно поместить в отдельные файлы.
-
-6. В папке `honey` создаём файл `DESCRIPTION` с описанием пакета. Примерно такой
+3. В папке `honey` редактируем файл `DESCRIPTION` с описанием пакета. 
 ```{r, eval=FALSE}
 Package: honey
-Type: Package
-Title: R package to get honey
-Version: 0.1
-Date: 2014-07-25
-Author: Winni-the-Pooh
-Maintainer: Winni-the-Pooh <xxx.yyy@zzz.com>
-Description: This package contains functions useful to distinguish good and bad bees.
-License: MIT
+Title: What the Package Does (one line, title case)
+Version: 0.0.0.9000
+Authors@R: person("Winnie", "Pooh", email = "winnie.the.pooh@dub.com", role = c("aut", "cre"))
+Description: What the package does (one paragraph).
+Depends: R (>= 3.4.0)
+Imports:
+  dplyr (>= 0.7.2),
+  ggplot2 (>= 2.2.1).
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
+Suggests: testthat
 ```
-Мелочи: 
 
-* поле `Title` не должно содержать точку в конце
+Отметим: 
+
+* пакеты, которые мы используем при написании нашего пакета `honey` пишем в раздел `Imports`;
+* поле `Title` не должно содержать точку в конце;
 * поле `Description` должно состоять из одного или нескольких предложений и должно содержать точку в конце.
 
-7. Перед каждой функцией файла `honey.R` пишем документацию примерно такого вида:
-
-```{r, eval=FALSE}
-#' Evaluates the amount of good honey given the tree
-#'
-#' Evaluates the amount of good honey given the tree
-#'
-#' The amount of honey is estimated using the latest mcmc methods.
-#'
-#' @param tree the tree for which the amount of honey is estimated
-#' @return numeric the estimated amount of good honey
-#' @export
-#' @examples
-#' honey_evaluate(tree)
-```
-
-8. В папке `honey` создаём файл `NEWS` с описанием истории создания пакета. Мы его будем обновлять при выходе новых версий. Для начала он может быть очень простым:
+4. В папке `honey` создаём файл `NEWS` с описанием истории создания пакета. Мы его будем обновлять при выходе новых версий. Для начала он может быть очень простым:
 ```{r, eval=FALSE}
 # honey 0.1
 * first public release of the package :)
 ```
 
-9. В начале файла `honey.R` пишем описание пакета в целом:
+5. В подпапке `R` создаём файл `honey.R` и пишем в нём описание пакета в целом:
 
 
 ```{r, eval=FALSE}
@@ -77,11 +74,52 @@ License: MIT
 NULL
 ```
 
-10. Если пакет включает в себя наборы данных, то:
+6. Инициализируем `git`-репозиторий с двумя ветками: `dev` и `master`.
 
-    * С помощью пакета `devtools` помещаем набор данных `pot` в нужное место, `use_data(pot)`.
-    * В файл `honey.R` после описания пакета в целом помещаем описание данных:
-  
+7. Настраиваем синхронизацию с удалённым `github`-репозиторием.
+
+
+# Типичный цикл работы над пакетом
+
+1. Написали очередную новую функцию или отредактировали старую. 
+
+Все функции помещают в папку `R`. Можно хоть все функции поместить в общий файл `honey.R`, хоть каждую функцию помещать в отдельный файл со своим именем. Истина, как всегда, лежит где-то посередение между этими двумя крайностями. Для маленького пакета разумно все функции поместить в `honey.R`. 
+
+Перед каждой функцией должна быть написана документация в специальном формате. Например,
+```{r, eval=FALSE}
+#' Evaluates the amount of good honey given the tree
+#'
+#' Evaluates the amount of good honey given the tree
+#'
+#' The amount of honey is estimated using the latest mcmc methods.
+#'
+#' @param tree the tree for which the amount of honey is estimated
+#' @return numeric the estimated amount of good honey
+#' @export
+#' @examples
+#' tree <- "Bolshoy Dub"
+#' honey_evaluate(tree)
+honey_evaluate <- function(tree_name) {
+  # ...
+  # ...
+  return(good_honey_weight)
+}
+```
+
+Важно:
+
+* опция `@export` означает, что функция видна конечному пользователю. Без этой опции фукнция будет доступна только для других функций пакета;
+* функции из других пакетов нужно вызывать с полным указанием имени пакета, то есть, например, `ggplot2::qplot(...)` или `dplyr::mutate(...)`;
+* функция `library()` поэтому внутри пакета не используется.
+
+2. Добавили новый встроенный набор данных или обновили старый. 
+
+Скажем, мы хотим встроить в пакет набор данных `pot`:
+```{r, eval=FALSE}
+devtools::use_data(pot)
+```
+
+И после дописываем в `honey.R` документацию:
 ```{r, eval=FALSE}
 #' Data on honey prices
 #'
@@ -100,40 +138,65 @@ NULL
 NULL
 ```
 
-# Типичный цикл работы над пакетом
 
 
-1. Загрузили пакеты для разработки, зашли в папку нашего пакета, включили режим разработки
+3. Подключили пакет и проверили работу функции руками
 ```{r, eval=FALSE}
-library("devtools")
-setwd("honey")
-
-dev_mode()
+devtools::load_all()
 ```
 
-2. Что-то там изменили в функциях и в документации
 
-3. Обновили документацию и провели базовую проверку пакета:
+4. Написали код, тестирующий функцию
+
+
+5. Запустили кучу автоматических тестов
 ```{r, eval=FALSE}
-check()
+devtools::check()
 ```
 
-4. Закоммитили изменения в `dev` ветку репозитория.
+В результате автоматического анализа мы видим ошибки `errors`, предупреждения `warnings` и примечания `notes`. Ошибки и предупреждения надо исправлять. От примечаний желательно избавляться. Если публиковать пакет на CRAN, то и от примечаний нужно избавиться.
 
-5. Установили локально и подключили новую версию пакета для более подробного тестирования
+Если нужно запускать только тесты, написанные нами, то
 ```{r, eval=FALSE}
-install("../honey")
-library("honey")
+devtools::test()
 ```
 
-6. Если не надоело, перешли к шагу 3.
-
-7. Вышли из режима разработки
+Проверили стиль кода:
 ```{r, eval=FALSE}
-dev_mode(FALSE)
+lintr::lint_package()
 ```
 
-8. Если получилось что-то путное, перенесли изменения из `dev` ветки в ветку `master`
+И можно оценить покрытие пакета тестами:
+```{r, eval=FALSE}
+covr::package_coverage()
+```
+
+
+
+6. Поправили требования в разделе `Imports` файла `DESCRIPTION`. 
+
+7. Закоммитили изменения в `dev` ветку репозитория.
+
+8. Когда изменений накопилось достаточно создали запрос на перенос изменений из `dev` ветки в `master` ветку и одобрили его.
+
+9. Обновили `NEWS` файл.
+
+
+10. Создаём виньетку к пакету
+
+
+Скажем, создадим виньетку под названием `honey_intro`.
+```{r, eval=FALSE}
+devtools::use_vignette("honey_intro")
+```
+
+После редактирования `.Rmd`-файла виньетки его можно скомпилировать в готовую документацию командой
+
+```{r, eval=FALSE}
+devtools::build_vignettes()
+```
+
+11. Выложить пакет на CRAN :)
 
 
 # Загрузка пакета 
@@ -155,8 +218,15 @@ library("honey")
 ```
 
 
+
+
+
 Почиташки:
 
 * Hadley Wickham, [R packages](http://r-pkgs.had.co.nz/)
 * Simko, [From R code to R package](https://github.com/vsimko/course-rpackages)
+* [http://kbroman.org/github_tutorial/pages/init.html](git intro)
+* [https://romantsegelskyi.github.io/blog/2015/11/16/good-practices-r-package/](quick start R package)
+* [http://tinyheero.github.io/jekyll/update/2015/07/26/making-your-first-R-package.html](more R)
+
 
