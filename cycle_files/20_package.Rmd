@@ -199,7 +199,13 @@ devtools::build_vignettes()
 11. Выложить пакет на CRAN :)
 
 
-# Загрузка пакета 
+# Установка пакета 
+
+Можно поставить пакет из локальной папки
+```{r, eval=FALSE}
+devtools::install()
+```
+
 
 Любой другой человек сможет установить наш пакет командой
 ```{r, eval=FALSE}
@@ -228,5 +234,6 @@ library("honey")
 * [http://kbroman.org/github_tutorial/pages/init.html](git intro)
 * [https://romantsegelskyi.github.io/blog/2015/11/16/good-practices-r-package/](quick start R package)
 * [http://tinyheero.github.io/jekyll/update/2015/07/26/making-your-first-R-package.html](more R)
+* [http://www.davekleinschmidt.com/r-packages/](even more R)
 
 
